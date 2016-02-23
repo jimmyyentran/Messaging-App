@@ -30,7 +30,7 @@ import java.awt.EventQueue;
  * work with PostgreSQL JDBC drivers.
  *
  */
-public class Messenger {
+public class MessengerGui {
 
     // reference to physical database connection.
     private Connection _connection = null;
@@ -41,7 +41,7 @@ public class Messenger {
             new InputStreamReader(System.in));
 
     /**
-     * Creates a new instance of Messenger
+     * Creates a new instance of MessengerGui
      *
      * @param hostname the MySQL or PostgreSQL server hostname
      * @param database the name of the database
@@ -49,7 +49,7 @@ public class Messenger {
      * @param password the user login password
      * @throws java.sql.SQLException when failed to make a connection.
      */
-    public Messenger (String dbname, String dbport, String user, String passwd) throws SQLException {
+    public MessengerGui (String dbname, String dbport, String user, String passwd) throws SQLException {
 
         System.out.print("Connecting to database...");
         try{
@@ -65,7 +65,7 @@ public class Messenger {
             System.out.println("Make sure you started postgres on this machine");
             System.exit(-1);
         }//end catch
-    }//end Messenger
+    }//end MessengerGui
 
     /**
      * Method to execute an update SQL statement.  Update SQL instructions
@@ -231,22 +231,32 @@ public class Messenger {
             System.err.println (
                     "Usage: " +
                     "java [-classpath <classpath>] " +
-                    Messenger.class.getName () +
+                    MessengerGui.class.getName () +
                     " <dbname> <port> <user>");
             return;
         }//end if
 
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Mainframe ex = new Mainframe();
+                ex.setVisible(true);
+            }
+        });
+
+        // }
+
         Greeting();
-        Messenger esql = null;
+        MessengerGui esql = null;
         try{
             // use postgres JDBC driver.
             Class.forName ("org.postgresql.Driver").newInstance ();
-            // instantiate the Messenger object and creates a physical
+            // instantiate the MessengerGui object and creates a physical
             // connection.
             String dbname = args[0];
             String dbport = args[1];
             String user = args[2];
-            esql = new Messenger (dbname, dbport, user, "");
+            esql = new MessengerGui (dbname, dbport, user, "");
 
             boolean keepon = true;
             while(keepon) {
@@ -330,7 +340,7 @@ public class Messenger {
      * Creates a new user with privided login, passowrd and phoneNum
      * An empty block and contact list would be generated and associated with a user
      **/
-    public static void CreateUser(Messenger esql){
+    public static void CreateUser(MessengerGui esql){
         try{
             System.out.print("\tEnter user login: ");
             String login = in.readLine();
@@ -358,7 +368,7 @@ public class Messenger {
      * Check log in credentials for an existing user
      * @return User login or null is the user does not exist
      **/
-    public static String LogIn(Messenger esql){
+    public static String LogIn(MessengerGui esql){
         try{
             System.out.print("\tEnter user login: ");
             String login = in.readLine();
@@ -376,29 +386,29 @@ public class Messenger {
         }
     }//end
 
-    public static void AddToContact(Messenger esql){
+    public static void AddToContact(MessengerGui esql){
         // Your code goes here.
         // ...
         // ...
     }//end
 
-    public static void ListContacts(Messenger esql){
+    public static void ListContacts(MessengerGui esql){
         // Your code goes here.
         // ...
         // ...
     }//end
 
-    public static void NewMessage(Messenger esql){
+    public static void NewMessage(MessengerGui esql){
         // Your code goes here.
         // ...
         // ...
     }//end 
 
 
-    public static void Query6(Messenger esql){
+    public static void Query6(MessengerGui esql){
         // Your code goes here.
         // ...
         // ...
     }//end Query6
 
-}//end Messenger
+}//end MessengerGui
