@@ -9,9 +9,11 @@ public class Mainframe extends JFrame {
     }
 
     private void initUI() {
-        add(login.getPanel());
-        setTitle("Simple example");
-        setSize(300, 150);
+        // add(login.getPanel());
+        add(new Registration());
+        setTitle("Messenger Application");
+        // setSize(300, 150);
+        setSize(650, 350);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
