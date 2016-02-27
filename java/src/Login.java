@@ -8,8 +8,10 @@ import java.awt.event.ActionListener;
 import java.awt.Component;
 import javax.swing.JOptionPane;
 
-public class Login {
+public class Login implements ActionListener{
     private JPanel panel;
+    private LoginListener listener;
+    private JButton loginButton, registerButton;
 
     public Login(){
         panel = new JPanel();
@@ -31,35 +33,32 @@ public class Login {
         passwordText.setBounds(100, 40, 160, 25);
         panel.add(passwordText);
 
-        JButton loginButton = new JButton("login");
+        loginButton = new JButton("login");
         loginButton.setBounds(10, 80, 80, 25);
         panel.add(loginButton);
 
-        JButton registerButton = new JButton("register");
+        registerButton = new JButton("register");
         registerButton.setBounds(180, 80, 80, 25);
         panel.add(registerButton);
 
-        ActionListener loginButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton source = (JButton) e.getSource();
-                JOptionPane.showMessageDialog(source, source.getText()
-                        + " button has been pressed");
-            }
-        };
-        loginButton.addActionListener(loginButtonListener);
+        loginButton.addActionListener(this);
+        registerButton.addActionListener(this);
+    }
 
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog((Component) e.getSource(),
-                        "button has been pressed");
-            }
-        });
+    public void actionPerformed(ActionEvent e){
+        if(e.getSource == loginButton){
+            listener.loginEventOccured();
+        } else if (e.getSource == registerButton){
+            listener.registrationEventOccured();
+        }
     }
 
     public JPanel getPanel(){
         return panel;
+    }
+
+    public void setLoginListener(LoginListener listener){
+        this.listener = listener;
     }
 
 }

@@ -7,8 +7,9 @@ public class Registration extends JPanel implements ActionListener
 { 
     JLabel l1, l2, l4, l5, l8;
     JTextField tf1, tf7;
-    JButton btn1, btn2;
+    JButton btn1, btn2, btn3;
     JPasswordField p1, p2;
+    private RegistrationListener listener;
 
     Registration()
     {
@@ -35,12 +36,14 @@ public class Registration extends JPanel implements ActionListener
 
         btn1 = new JButton("Submit");
         btn2 = new JButton("Clear");
+        btn3 = new JButton("Cancel");
 
         btn1.addActionListener(this);
         btn2.addActionListener(this);
+        btn3.addActionListener(this);
 
         // Title and Labels
-        l1.setBounds(100, 30, 400, 30);
+        l1.setBounds(80, 30, 400, 30);
         l2.setBounds(80, 70, 200, 30);
         l4.setBounds(80, 110, 200, 30);
         l5.setBounds(80, 150, 200, 30);
@@ -53,6 +56,7 @@ public class Registration extends JPanel implements ActionListener
         tf7.setBounds(300, 190, 200, 30);
         btn1.setBounds(50, 230, 100, 30);
         btn2.setBounds(170, 230, 100, 30);
+        btn3.setBounds(450, 230, 100, 30);
 
         add(l1);
         add(l2);
@@ -65,6 +69,7 @@ public class Registration extends JPanel implements ActionListener
         add(tf7);
         add(btn1);
         add(btn2);
+        add(btn3);
     }
 
     public void actionPerformed(ActionEvent e) 
@@ -97,7 +102,7 @@ public class Registration extends JPanel implements ActionListener
                     // x++;
                     // if (x > 0) 
                     // {
-                        // JOptionPane.showMessageDialog(btn1, "Data Saved Successfully");
+                    // JOptionPane.showMessageDialog(btn1, "Data Saved Successfully");
                     // }
                     throw new Exception("Unimplemented Driver");
                 }
@@ -111,12 +116,19 @@ public class Registration extends JPanel implements ActionListener
                 JOptionPane.showMessageDialog(btn1, "Password Does Not Match");
             } 
         } 
-        else
+        else if(e.getSource() == btn2)
         {
             tf1.setText("");
             p1.setText("");
             p2.setText("");
             tf7.setText("");
         }
-    } 
+        else if (e.getSource() == btn3) {
+            listener.cancelEventOccured();
+        }
+    }
+
+    public void setRegistrationListener(RegistrationListener listener) {
+        this.listener = listener;
+    }
 }

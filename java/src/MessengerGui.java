@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.EventQueue;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -220,94 +219,6 @@ public class MessengerGui {
             // ignored.
         }//end try
     }//end cleanup
-
-    /**
-     * The main execution method
-     *
-     * @param args the command line arguments this inclues the <mysql|pgsql> <login file>
-     */
-    public static void main (String[] args) {
-        if (args.length != 3) {
-            System.err.println (
-                    "Usage: " +
-                    "java [-classpath <classpath>] " +
-                    MessengerGui.class.getName () +
-                    " <dbname> <port> <user>");
-            return;
-        }//end if
-
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Mainframe ex = new Mainframe();
-                ex.setVisible(true);
-            }
-        });
-
-        // }
-
-        Greeting();
-        MessengerGui esql = null;
-        try{
-            // use postgres JDBC driver.
-            Class.forName ("org.postgresql.Driver").newInstance ();
-            // instantiate the MessengerGui object and creates a physical
-            // connection.
-            String dbname = args[0];
-            String dbport = args[1];
-            String user = args[2];
-            esql = new MessengerGui (dbname, dbport, user, "");
-
-            boolean keepon = true;
-            while(keepon) {
-                // These are sample SQL statements
-                System.out.println("MAIN MENU");
-                System.out.println("---------");
-                System.out.println("1. Create user");
-                System.out.println("2. Log in");
-                System.out.println("9. < EXIT");
-                String authorisedUser = null;
-                switch (readChoice()){
-                    case 1: CreateUser(esql); break;
-                    case 2: authorisedUser = LogIn(esql); break;
-                    case 9: keepon = false; break;
-                    default : System.out.println("Unrecognized choice!"); break;
-                }//end switch
-                if (authorisedUser != null) {
-                    boolean usermenu = true;
-                    while(usermenu) {
-                        System.out.println("MAIN MENU");
-                        System.out.println("---------");
-                        System.out.println("1. Add to contact list");
-                        System.out.println("2. Browse contact list");
-                        System.out.println("3. Write a new message");
-                        System.out.println(".........................");
-                        System.out.println("9. Log out");
-                        switch (readChoice()){
-                            case 1: AddToContact(esql); break;
-                            case 2: ListContacts(esql); break;
-                            case 3: NewMessage(esql); break;
-                            case 9: usermenu = false; break;
-                            default : System.out.println("Unrecognized choice!"); break;
-                        }
-                    }
-                }
-            }//end while
-        }catch(Exception e) {
-            System.err.println (e.getMessage ());
-        }finally{
-            // make sure to cleanup the created table and close the connection.
-            try{
-                if(esql != null) {
-                    System.out.print("Disconnecting from database...");
-                    esql.cleanup ();
-                    System.out.println("Done\n\nBye !");
-                }//end if
-            }catch (Exception e) {
-                // ignored.
-            }//end try
-        }//end try
-    }//end main
 
     public static void Greeting(){
         System.out.println(
