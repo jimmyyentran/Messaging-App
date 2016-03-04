@@ -220,13 +220,6 @@ public class MessengerGui {
         }//end try
     }//end cleanup
 
-    public static void Greeting(){
-        System.out.println(
-                "\n\n*******************************************************\n" +
-                "              User Interface      	               \n" +
-                "*******************************************************\n");
-    }//end Greeting
-
     /*
      * Reads the users choice given from the keyboard
      * @int
@@ -251,24 +244,17 @@ public class MessengerGui {
      * Creates a new user with privided login, passowrd and phoneNum
      * An empty block and contact list would be generated and associated with a user
      **/
-    public static void CreateUser(MessengerGui esql){
+    public void CreateUser(String login, String password, String phone){
         try{
-            System.out.print("\tEnter user login: ");
-            String login = in.readLine();
-            System.out.print("\tEnter user password: ");
-            String password = in.readLine();
-            System.out.print("\tEnter user phone: ");
-            String phone = in.readLine();
-
             //Creating empty contact\block lists for a user
-            esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('block')");
-            int block_id = esql.getCurrSeqVal("user_list_list_id_seq");
-            esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('contact')");
-            int contact_id = esql.getCurrSeqVal("user_list_list_id_seq");
+            executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('block')");
+            int block_id = getCurrSeqVal("user_list_list_id_seq");
+            executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('contact')");
+            int contact_id = getCurrSeqVal("user_list_list_id_seq");
 
             String query = String.format("INSERT INTO USR (phoneNum, login, password, block_list, contact_list) VALUES ('%s','%s','%s',%s,%s)", phone, login, password, block_id, contact_id);
 
-            esql.executeUpdate(query);
+            executeUpdate(query);
             System.out.println ("User successfully created!");
         }catch(Exception e){
             System.err.println (e.getMessage ());
@@ -279,15 +265,11 @@ public class MessengerGui {
      * Check log in credentials for an existing user
      * @return User login or null is the user does not exist
      **/
-    public static String LogIn(MessengerGui esql){
+    public String LogIn(String login, String password){
         try{
-            System.out.print("\tEnter user login: ");
-            String login = in.readLine();
-            System.out.print("\tEnter user password: ");
-            String password = in.readLine();
-
             String query = String.format("SELECT * FROM Usr WHERE login = '%s' AND password = '%s'", login, password);
-            int userNum = esql.executeQuery(query);
+            int userNum = executeQuery(query);
+            System.out.println("TEST");
             if (userNum > 0)
                 return login;
             return null;

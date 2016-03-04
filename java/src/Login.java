@@ -12,6 +12,8 @@ public class Login implements ActionListener{
     private JPanel panel;
     private LoginListener listener;
     private JButton loginButton, registerButton;
+    private JTextField userText;
+    private JPasswordField passwordText;
 
     public Login(){
         panel = new JPanel();
@@ -21,7 +23,7 @@ public class Login implements ActionListener{
         userLabel.setBounds(10, 10, 80, 25);
         panel.add(userLabel);
 
-        JTextField userText = new JTextField(20);
+        userText = new JTextField(20);
         userText.setBounds(100, 10, 160, 25);
         panel.add(userText);
 
@@ -29,7 +31,7 @@ public class Login implements ActionListener{
         passwordLabel.setBounds(10, 40, 80, 25);
         panel.add(passwordLabel);
 
-        JPasswordField passwordText = new JPasswordField(20);
+        passwordText = new JPasswordField(20);
         passwordText.setBounds(100, 40, 160, 25);
         panel.add(passwordText);
 
@@ -46,9 +48,9 @@ public class Login implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent e){
-        if(e.getSource == loginButton){
-            listener.loginEventOccured();
-        } else if (e.getSource == registerButton){
+        if(e.getSource() == loginButton){
+            listener.loginEventOccured(userText.getText(), String.valueOf(passwordText.getPassword()));
+        } else if (e.getSource() == registerButton){
             listener.registrationEventOccured();
         }
     }

@@ -9,7 +9,7 @@ public class Mainframe extends JFrame {
 
     public Mainframe(MessengerGui m) {
         login = new Login();
-        view = new CardLayoutView();
+        view = new CardLayoutView(m);
         model = m;
         initUI();
         addWindowListener(new WindowAdapter(){
