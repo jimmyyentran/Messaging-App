@@ -244,7 +244,7 @@ public class MessengerGui {
      * Creates a new user with privided login, passowrd and phoneNum
      * An empty block and contact list would be generated and associated with a user
      **/
-    public void CreateUser(String login, String password, String phone){
+    public void CreateUser(String login, String password, String phone) throws Exception {
         try{
             //Creating empty contact\block lists for a user
             executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('block')");
@@ -257,7 +257,7 @@ public class MessengerGui {
             executeUpdate(query);
             System.out.println ("User successfully created!");
         }catch(Exception e){
-            System.err.println (e.getMessage ());
+            throw new Exception("That username already exists!");
         }
     }//end
 
@@ -269,9 +269,10 @@ public class MessengerGui {
         try{
             String query = String.format("SELECT * FROM Usr WHERE login = '%s' AND password = '%s'", login, password);
             int userNum = executeQuery(query);
-            System.out.println("TEST");
-            if (userNum > 0)
+            if (userNum > 0){
+                System.out.println("Login authorized");
                 return login;
+            }
             return null;
         }catch(Exception e){
             System.err.println (e.getMessage ());

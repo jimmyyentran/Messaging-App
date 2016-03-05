@@ -249,40 +249,43 @@ public class Messenger {
             esql = new Messenger (dbname, dbport, user, "");
 
             boolean keepon = true;
-            while(keepon) {
-                // These are sample SQL statements
-                System.out.println("MAIN MENU");
-                System.out.println("---------");
-                System.out.println("1. Create user");
-                System.out.println("2. Log in");
-                System.out.println("9. < EXIT");
-                String authorisedUser = null;
-                switch (readChoice()){
-                    case 1: CreateUser(esql); break;
-                    case 2: authorisedUser = LogIn(esql); break;
-                    case 9: keepon = false; break;
-                    default : System.out.println("Unrecognized choice!"); break;
-                }//end switch
-                if (authorisedUser != null) {
-                    boolean usermenu = true;
-                    while(usermenu) {
-                        System.out.println("MAIN MENU");
-                        System.out.println("---------");
-                        System.out.println("1. Add to contact list");
-                        System.out.println("2. Browse contact list");
-                        System.out.println("3. Write a new message");
-                        System.out.println(".........................");
-                        System.out.println("9. Log out");
-                        switch (readChoice()){
-                            case 1: AddToContact(esql); break;
-                            case 2: ListContacts(esql); break;
-                            case 3: NewMessage(esql); break;
-                            case 9: usermenu = false; break;
-                            default : System.out.println("Unrecognized choice!"); break;
-                        }
-                    }
-                }
-            }//end while
+
+            ListContacts(esql);
+
+            // while(keepon) {
+                // // These are sample SQL statements
+                // System.out.println("MAIN MENU");
+                // System.out.println("---------");
+                // System.out.println("1. Create user");
+                // System.out.println("2. Log in");
+                // System.out.println("9. < EXIT");
+                // String authorisedUser = null;
+                // switch (readChoice()){
+                    // case 1: CreateUser(esql); break;
+                    // case 2: authorisedUser = LogIn(esql); break;
+                    // case 9: keepon = false; break;
+                    // default : System.out.println("Unrecognized choice!"); break;
+                // }//end switch
+                // if (authorisedUser != null) {
+                    // boolean usermenu = true;
+                    // while(usermenu) {
+                        // System.out.println("MAIN MENU");
+                        // System.out.println("---------");
+                        // System.out.println("1. Add to contact list");
+                        // System.out.println("2. Browse contact list");
+                        // System.out.println("3. Write a new message");
+                        // System.out.println(".........................");
+                        // System.out.println("9. Log out");
+                        // switch (readChoice()){
+                            // case 1: AddToContact(esql); break;
+                            // case 2: ListContacts(esql); break;
+                            // case 3: NewMessage(esql); break;
+                            // case 9: usermenu = false; break;
+                            // default : System.out.println("Unrecognized choice!"); break;
+                        // }
+                    // }
+                // }
+            // }//end while
         }catch(Exception e) {
             System.err.println (e.getMessage ());
         }finally{
@@ -382,10 +385,22 @@ public class Messenger {
         // ...
     }//end
 
-    public static void ListContacts(Messenger esql){
-        // Your code goes here.
-        // ...
-        // ...
+    public static List<List<String>> ListContacts(Messenger esql){
+        try{
+            String login = "Eve";
+            String query = String.format(
+                    "SELECT * \n" +
+                    "FROM User_list_contains WHERE list_id=\n(" +
+                    "SELECT Usr.contact_list \n" +
+                    "FROM Usr WHERE login = '%s')", login);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            return null;
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return null;
+        }
     }//end
 
     public static void NewMessage(Messenger esql){

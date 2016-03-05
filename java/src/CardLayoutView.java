@@ -6,17 +6,22 @@ public class CardLayoutView {
     private JPanel cards;
     private Registration registration;
     private Login login;
+    private UI ui;
     private CardLayout cardLayout = new CardLayout();
     private MessengerGui esql;
     private String authorizedUser = null;
 
     public CardLayoutView(MessengerGui e) {
+        // cards.setJ
+
         login = new Login();
         registration = new Registration();
+        ui = new UI();
 
         esql = e;
 
         cards = new JPanel(cardLayout);
+        cards.add(ui, "ui");
         cards.add(login.getPanel(), "login");
         cards.add(registration, "registration");
 
@@ -31,7 +36,12 @@ public class CardLayoutView {
     private void setUpRegistration(){
         registration.setRegistrationListener(new RegistrationListener(){
             public void submitEventOccured(String login, String password, String phone){
-
+                try{
+                    esql.CreateUser(login, password, phone);
+                }
+                catch(Exception e){
+                    JOptionPane.showMessageDialog(cards, e.getMessage());
+                }
             }
 
             public void cancelEventOccured(){

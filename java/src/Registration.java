@@ -85,35 +85,22 @@ public class Registration extends JPanel implements ActionListener
             String s9 = new String(s4);
 
             String s7 = tf7.getText();
-            if (s8.equals(s9))
+
+            //Passwords match
+            if(s1.equals(""))
             {
-                try
-                {
-                    // Class.forName("oracle.jdbc.driver.OracleDriver");
-                    // Connection con = DriverManager.getConnection("jdbc:oracle:thin:@mcndesktop07:1521:xe", "sandeep", "welcome");
-                    // PreparedStatement ps = con.prepareStatement("insert into reg values(?,?,?,?,?,?)");
-                    // ps.setString(1, s1);
-                    // ps.setString(2, s2);
-                    // ps.setString(3, s8);
-                    // ps.setString(4, s5);
-                    // ps.setString(5, s6);
-                    // ps.setString(6, s7);
-                    // ResultSet rs = ps.executeQuery();
-                    // x++;
-                    // if (x > 0) 
-                    // {
-                    // JOptionPane.showMessageDialog(btn1, "Data Saved Successfully");
-                    // }
-                    throw new Exception("Unimplemented Driver");
-                }
-                catch (Exception ex) 
-                {
-                    System.out.println(ex);
-                }
+                JOptionPane.showMessageDialog(btn1, "Name cannot be blank");
+            }
+            else if(s8.equals("") || s9.equals("")){
+                JOptionPane.showMessageDialog(btn1, "Password fields cannot be blank");
+            }
+            else if (!s8.equals(s9))
+            {
+                JOptionPane.showMessageDialog(btn1, "Password Does Not Match");
             }
             else
             {
-                JOptionPane.showMessageDialog(btn1, "Password Does Not Match");
+                listener.submitEventOccured(s1, s8, s7);
             } 
         } 
         else if(e.getSource() == btn2)
