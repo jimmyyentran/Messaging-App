@@ -15,3 +15,5 @@ logfile
 
 #vim
 *.vim
+
+*.nfs*

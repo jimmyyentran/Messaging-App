@@ -251,6 +251,7 @@ public class Messenger {
             boolean keepon = true;
 
             ListContacts(esql);
+            ListBlocked(esql);
 
             // while(keepon) {
                 // // These are sample SQL statements
@@ -389,13 +390,16 @@ public class Messenger {
         try{
             String login = "Eve";
             String query = String.format(
-                    "SELECT * \n" +
+                    "SELECT Usr.login, Usr.status\n" +
+                    "FROM Usr WHERE login IN\n(" +
+                    "SELECT User_list_contains.list_member \n" +
                     "FROM User_list_contains WHERE list_id=\n(" +
                     "SELECT Usr.contact_list \n" +
-                    "FROM Usr WHERE login = '%s')", login);
+                    "FROM Usr WHERE login = '%s'))", login);
             System.out.println(query);
             int userNum = esql.executeQueryAndPrintResult(query);
             System.out.println("Number Outputs: " + userNum);
+            System.out.println();
             return null;
         }catch(Exception e){
             System.err.println (e.getMessage ());
@@ -408,6 +412,25 @@ public class Messenger {
         // ...
         // ...
     }//end 
+
+    public static void ListBlocked(Messenger esql){
+        try{
+            String login = "Eve";
+            String query = String.format(
+                    "SELECT Usr.login\n" +
+                    "FROM Usr WHERE login IN\n(" +
+                    "SELECT User_list_contains.list_member \n" +
+                    "FROM User_list_contains WHERE list_id=\n(" +
+                    "SELECT Usr.block_list \n" +
+                    "FROM Usr WHERE login = '%s'))", login);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
 
 
     public static void Query6(Messenger esql){
