@@ -252,6 +252,7 @@ public class Messenger {
 
             ListContacts(esql);
             ListBlocked(esql);
+            AddToContact(esql);
 
             // while(keepon) {
                 // // These are sample SQL statements
@@ -381,9 +382,20 @@ public class Messenger {
     }//end
 
     public static void AddToContact(Messenger esql){
-        // Your code goes here.
-        // ...
-        // ...
+        try{
+            String login = "Eve";
+            String addedContact = "Kobe";
+            String query = String.format(
+                    "INSERT INTO User_list_contains ((" +
+                    "SELECT Usr.contact_list \n" +
+                    "FROM Usr WHERE login = '%s') '%s')", login, addedContact);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
     }//end
 
     public static List<List<String>> ListContacts(Messenger esql){
