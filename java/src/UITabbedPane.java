@@ -9,7 +9,7 @@ public class UITabbedPane extends JTabbedPane implements ActionListener
     private JPanel blocked_list;
 
     UITabbedPane(){
-        contact_list = new JPanel();
+        contact_list = new UIContactList();
         blocked_list = new JPanel();
         addTab("Contact", contact_list);
         addTab("Blocked", blocked_list);
