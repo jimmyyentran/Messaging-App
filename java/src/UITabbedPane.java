@@ -16,6 +16,7 @@ public class UITabbedPane extends JTabbedPane implements ActionListener
     }
 
     public void actionPerformed(ActionEvent e) {
+
     }
 
     // public void setRegistrationListener(UIListener listener) {

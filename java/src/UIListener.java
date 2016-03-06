@@ -1,3 +1,3 @@
 public interface UIListener {
-    public void cancelEventOccured();
+    public void logoutEventOccured();
 }

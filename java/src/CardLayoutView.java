@@ -21,12 +21,13 @@ public class CardLayoutView {
         esql = e;
 
         cards = new JPanel(cardLayout);
-        cards.add(ui, "ui");
         cards.add(login.getPanel(), "login");
         cards.add(registration, "registration");
+        cards.add(ui, "ui");
 
         setUpRegistration();
         setUpLogin();
+        setUpUI();
     }
 
     public JPanel getPanel() {
@@ -38,6 +39,9 @@ public class CardLayoutView {
             public void submitEventOccured(String login, String password, String phone){
                 try{
                     esql.CreateUser(login, password, phone);
+
+                    ui.setMessengerGui(esql);
+                    cardLayout.show(cards, "ui");
                 }
                 catch(Exception e){
                     JOptionPane.showMessageDialog(cards, e.getMessage());
@@ -55,7 +59,7 @@ public class CardLayoutView {
             public void loginEventOccured(String login, String password){
                 authorizedUser = esql.LogIn(login, password);
                 if(authorizedUser != null){
-                    //show new view here
+                    cardLayout.show(cards, "ui");
                 }
                 else {
                     JOptionPane.showMessageDialog(cards, "Wrong Login Info");
@@ -63,6 +67,15 @@ public class CardLayoutView {
             }
             public void registrationEventOccured(){
                 cardLayout.show(cards, "registration");
+            }
+        });
+    }
+
+    private void setUpUI(){
+        ui.setUIListener(new UIListener(){
+            public void logoutEventOccured(){
+                cardLayout.show(cards, "login");
+                //change user
             }
         });
     }
