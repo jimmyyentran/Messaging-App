@@ -11,14 +11,14 @@ public class CardLayoutView {
     private MessengerGui esql;
     private String authorizedUser = null;
 
-    public CardLayoutView(MessengerGui e) {
+    public CardLayoutView() {
         // cards.setJ
 
         login = new Login();
         registration = new Registration();
         ui = new UI();
 
-        esql = e;
+        esql = MessengerGui.getInstance();
 
         cards = new JPanel(cardLayout);
         cards.add(login.getPanel(), "login");
@@ -39,8 +39,7 @@ public class CardLayoutView {
             public void submitEventOccured(String login, String password, String phone){
                 try{
                     esql.CreateUser(login, password, phone);
-
-                    ui.setMessengerGui(esql);
+                    esql.setUser(login);
                     cardLayout.show(cards, "ui");
                 }
                 catch(Exception e){
@@ -59,6 +58,8 @@ public class CardLayoutView {
             public void loginEventOccured(String login, String password){
                 authorizedUser = esql.LogIn(login, password);
                 if(authorizedUser != null){
+                    esql.setUser(authorizedUser);
+                    ui.loadUser();
                     cardLayout.show(cards, "ui");
                 }
                 else {

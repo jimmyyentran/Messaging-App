@@ -7,10 +7,9 @@ public class Mainframe extends JFrame {
     private CardLayoutView view;
     private MessengerGui model;
 
-    public Mainframe(MessengerGui m) {
+    public Mainframe() {
         login = new Login();
-        view = new CardLayoutView(m);
-        model = m;
+        view = new CardLayoutView();
         initUI();
         addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e){
@@ -54,7 +53,6 @@ public class Mainframe extends JFrame {
             return;
         }//end if
 
-
         // Greeting();
         try{
             // use postgres JDBC driver.
@@ -77,7 +75,7 @@ public class Mainframe extends JFrame {
                     } catch(Exception e){
                         System.err.println (e.getMessage ());
                     }
-                    Mainframe ex = new Mainframe(esql);
+                    Mainframe ex = new Mainframe();
                     ex.setVisible(true);
                 }
             });

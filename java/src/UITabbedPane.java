@@ -5,7 +5,7 @@ import java.awt.event.*;
 public class UITabbedPane extends JTabbedPane implements ActionListener 
 {
     // private UITabbedPane listener;
-    private JPanel contact_list;
+    private UIContactList contact_list;
     private JPanel blocked_list;
 
     UITabbedPane(){
@@ -17,6 +17,10 @@ public class UITabbedPane extends JTabbedPane implements ActionListener
 
     public void actionPerformed(ActionEvent e) {
 
+    }
+
+    public void loadUser(){
+        contact_list.loadButtons();
     }
 
     // public void setRegistrationListener(UIListener listener) {

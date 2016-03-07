@@ -53,17 +53,16 @@ public class UI extends JPanel implements ActionListener
         editStatus.addActionListener(this);
     }
 
+    public void loadUser(){
+        tabbedPane.loadUser();
+    }
+
 
     public void actionPerformed(ActionEvent e){
         String cmd = e.getActionCommand();
         if("logout".equals(cmd)){
             listener.logoutEventOccured();
         }
-    }
-
-
-    public void setMessengerGui(MessengerGui e){
-        esql = e;
     }
 
     public void setUIListener(UIListener listener) {

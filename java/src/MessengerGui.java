@@ -33,6 +33,8 @@ public class MessengerGui {
 
     // reference to physical database connection.
     private Connection _connection = null;
+    private static MessengerGui instance = null;
+    private static String user = null;
 
     // handling the keyboard inputs through a BufferedReader
     // This variable can be global for convenience.
@@ -58,6 +60,7 @@ public class MessengerGui {
 
             // obtain a physical connection
             this._connection = DriverManager.getConnection(url, user, passwd);
+            instance = this;
             System.out.println("Done");
         }catch (Exception e){
             System.err.println("Error - Unable to Connect to Database: " + e.getMessage() );
@@ -65,6 +68,19 @@ public class MessengerGui {
             System.exit(-1);
         }//end catch
     }//end MessengerGui
+
+    public static synchronized MessengerGui getInstance() {
+        return instance;
+    }
+
+    public static synchronized String getUser(){
+        return user;
+    }
+
+    //don't think I'd need synchronized for simple project
+    public static void setUser(String username){
+        user = username;
+    }
 
     /**
      * Method to execute an update SQL statement.  Update SQL instructions
@@ -290,6 +306,46 @@ public class MessengerGui {
         // Your code goes here.
         // ...
         // ...
+    }//end
+
+    public List<List<String>> ListContacts(){
+        try{
+            String query = String.format(
+                    "SELECT Usr.login, Usr.status\n" +
+                    "FROM Usr WHERE login IN\n(" +
+                    "SELECT User_list_contains.list_member \n" +
+                    "FROM User_list_contains WHERE list_id=\n(" +
+                    "SELECT Usr.contact_list \n" +
+                    "FROM Usr WHERE login = '%s'))", user);
+            System.out.println(query);
+            // int userNum = executeQueryAndPrintResult(query);
+            // System.out.println("Number Outputs: " + userNum);
+            // System.out.println();
+            return executeQueryAndReturnResult(query);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return null;
+        }
+    }//end
+
+    public List<List<String>> ListBlocked(){
+        try{
+            String query = String.format(
+                    "SELECT Usr.login\n" +
+                    "FROM Usr WHERE login IN\n(" +
+                    "SELECT User_list_contains.list_member \n" +
+                    "FROM User_list_contains WHERE list_id=\n(" +
+                    "SELECT Usr.block_list \n" +
+                    "FROM Usr WHERE login = '%s'))", user);
+            System.out.println(query);
+            // int userNum = executeQueryAndPrintResult(query);
+            // System.out.println("Number Outputs: " + userNum);
+            // System.out.println();
+            return executeQueryAndReturnResult(query);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return null;
+        }
     }//end
 
     public static void NewMessage(MessengerGui esql){
