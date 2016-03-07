@@ -78,6 +78,16 @@ public class CardLayoutView {
                 cardLayout.show(cards, "login");
                 //change user
             }
-        });
+            public void addEventOccured(){
+                // String s = (String)JOptionPane.showInputDialog(
+                        // cards,
+                        // "Enter username to add",
+                        // "Add user",
+                        // JOptionPane.PLAIN_MESSAGE
+                        // );
+            }
+            public void blockEventOccured(){}
+            public void editStatusEventOccured(){}
+            });
     }
 }

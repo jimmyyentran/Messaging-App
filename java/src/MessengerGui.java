@@ -296,16 +296,26 @@ public class MessengerGui {
         }
     }//end
 
-    public static void AddToContact(MessengerGui esql){
-        // Your code goes here.
-        // ...
-        // ...
+    public void AddToContact(String addedContact) throws Exception{
+        String query = String.format(
+                "INSERT INTO User_list_contains (list_id, list_member)" +
+                "VALUES((SELECT Usr.contact_list\n" +
+                "FROM Usr WHERE login = '%s'), '%s')", user, addedContact);
+        System.out.println(query);
+        int userNum = executeQueryAndPrintResult(query);
+        System.out.println("Number Outputs: " + userNum);
+        System.out.println();
     }//end
 
-    public static void ListContacts(MessengerGui esql){
-        // Your code goes here.
-        // ...
-        // ...
+    public void AddToBlock(String blockedContact) throws Exception{
+        String query = String.format(
+                "INSERT INTO User_list_contains (list_id, list_member)" +
+                "VALUES((SELECT Usr.block_list\n" +
+                "FROM Usr WHERE login = '%s'), '%s')", user, blockedContact);
+        System.out.println(query);
+        int userNum = executeQueryAndPrintResult(query);
+        System.out.println("Number Outputs: " + userNum);
+        System.out.println();
     }//end
 
     public List<List<String>> ListContacts(){
@@ -345,6 +355,44 @@ public class MessengerGui {
         }catch(Exception e){
             System.err.println (e.getMessage ());
             return null;
+        }
+    }//end
+
+    public List<List<String>> ListMessages(){
+        try{
+            String query = String.format(
+                    "SELECT *\n" +
+                    "FROM chat WHERE chat_id IN (\n" +
+                    "SELECT chat_id\n" +
+                    "FROM chat_list WHERE member = '%s')", user);
+            System.out.println(query);
+            // int userNum = esql.executeQueryAndPrintResult(query);
+            // System.out.println("Number Outputs: " + userNum);
+            // System.out.println();
+            return executeQueryAndReturnResult(query);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return null;
+        }
+    }//end
+
+    public boolean CheckUser(String login){
+        try{
+            String query = String.format(
+                    "SELECT Usr.login\n" +
+                    "FROM Usr WHERE login = '%s'", login);
+            System.out.println(query);
+            int userNum = executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+            if(userNum == 0){
+                return false;
+            } else {
+                return true;
+            }
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return false;
         }
     }//end
 

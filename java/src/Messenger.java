@@ -250,43 +250,46 @@ public class Messenger {
 
             boolean keepon = true;
 
-            ListContacts(esql);
-            ListBlocked(esql);
-            AddToContact(esql);
+            // ListContacts(esql);
+            // ListBlocked(esql);
+            // AddToContact(esql);
+            // CheckUser(esql);
+            GetMessages(esql);
+            AllUsersInChat(esql);
 
             // while(keepon) {
-                // // These are sample SQL statements
-                // System.out.println("MAIN MENU");
-                // System.out.println("---------");
-                // System.out.println("1. Create user");
-                // System.out.println("2. Log in");
-                // System.out.println("9. < EXIT");
-                // String authorisedUser = null;
-                // switch (readChoice()){
-                    // case 1: CreateUser(esql); break;
-                    // case 2: authorisedUser = LogIn(esql); break;
-                    // case 9: keepon = false; break;
-                    // default : System.out.println("Unrecognized choice!"); break;
-                // }//end switch
-                // if (authorisedUser != null) {
-                    // boolean usermenu = true;
-                    // while(usermenu) {
-                        // System.out.println("MAIN MENU");
-                        // System.out.println("---------");
-                        // System.out.println("1. Add to contact list");
-                        // System.out.println("2. Browse contact list");
-                        // System.out.println("3. Write a new message");
-                        // System.out.println(".........................");
-                        // System.out.println("9. Log out");
-                        // switch (readChoice()){
-                            // case 1: AddToContact(esql); break;
-                            // case 2: ListContacts(esql); break;
-                            // case 3: NewMessage(esql); break;
-                            // case 9: usermenu = false; break;
-                            // default : System.out.println("Unrecognized choice!"); break;
-                        // }
-                    // }
-                // }
+            // // These are sample SQL statements
+            // System.out.println("MAIN MENU");
+            // System.out.println("---------");
+            // System.out.println("1. Create user");
+            // System.out.println("2. Log in");
+            // System.out.println("9. < EXIT");
+            // String authorisedUser = null;
+            // switch (readChoice()){
+            // case 1: CreateUser(esql); break;
+            // case 2: authorisedUser = LogIn(esql); break;
+            // case 9: keepon = false; break;
+            // default : System.out.println("Unrecognized choice!"); break;
+            // }//end switch
+            // if (authorisedUser != null) {
+            // boolean usermenu = true;
+            // while(usermenu) {
+            // System.out.println("MAIN MENU");
+            // System.out.println("---------");
+            // System.out.println("1. Add to contact list");
+            // System.out.println("2. Browse contact list");
+            // System.out.println("3. Write a new message");
+            // System.out.println(".........................");
+            // System.out.println("9. Log out");
+            // switch (readChoice()){
+            // case 1: AddToContact(esql); break;
+            // case 2: ListContacts(esql); break;
+            // case 3: NewMessage(esql); break;
+            // case 9: usermenu = false; break;
+            // default : System.out.println("Unrecognized choice!"); break;
+            // }
+            // }
+            // }
             // }//end while
         }catch(Exception e) {
             System.err.println (e.getMessage ());
@@ -384,11 +387,11 @@ public class Messenger {
     public static void AddToContact(Messenger esql){
         try{
             String login = "Eve";
-            String addedContact = "Kobe";
+            String addedContact = "Jimmy";
             String query = String.format(
-                    "INSERT INTO User_list_contains ((" +
-                    "SELECT Usr.contact_list \n" +
-                    "FROM Usr WHERE login = '%s') '%s')", login, addedContact);
+                    "INSERT INTO User_list_contains (list_id, list_member)" +
+                    "VALUES((SELECT Usr.contact_list\n" +
+                    "FROM Usr WHERE login = '%s'), '%s')", login, addedContact);
             System.out.println(query);
             int userNum = esql.executeQueryAndPrintResult(query);
             System.out.println("Number Outputs: " + userNum);
@@ -444,6 +447,52 @@ public class Messenger {
         }
     }//end
 
+    public static void CheckUser(Messenger esql){
+        try{
+            String login = "Even";
+            String query = String.format(
+                    "SELECT Usr.login\n" +
+                    "FROM Usr WHERE login = '%s'", login);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
+
+    public static void GetMessages(Messenger esql){
+        try{
+            String login = "Hermina";
+            String query = String.format(
+                    "SELECT *\n" +
+                    "FROM chat WHERE chat_id IN (\n" +
+                    "SELECT chat_id\n" +
+                    "FROM chat_list WHERE member = '%s')", login);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
+
+    public static void AllUsersInChat(Messenger esql){
+        try{
+            String chatId= "0";
+            String query = String.format(
+                    "SELECT member\n" +
+                    "FROM chat_list WHERE chat_id = '%s'", chatId);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
 
     public static void Query6(Messenger esql){
         // Your code goes here.

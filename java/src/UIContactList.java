@@ -3,53 +3,20 @@ import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.*;
 
-public class UIContactList extends JPanel implements ActionListener 
+public class UIContactList extends UIAbstractList
 {
-    // private UIContactList listener;
-    // private JPanel contact_list;
-    private JScrollPane scrollpane;
-    private JButton[] users;
-    private MessengerGui esql;
-    private List<List<String>> contactList;
-
     UIContactList(){
-        // setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setLayout(new GridLayout(0,1));
-        esql = MessengerGui.getInstance();
+        super();
     }
 
-    public void loadButtons(){
-        contactList = esql.ListContacts();
-
-        for(List<String> tuple : contactList){
-            for(String attribute : tuple){
-                System.out.println(attribute);
-            }
-        }
-
-        users = new JButton[contactList.size()];
-
-        for(int i = 0; i < contactList.size(); i++){
-            users[i] = makeUser(i);
-        }
-
-        for(JButton a : users){
-            add(a);
-        }
+    protected void setList(){
+        list = esql.ListContacts();
     }
 
-    private JButton makeUser(int index){
-        List<String> tuple = contactList.get(index);
-        String htmlFormat = String.format("<html>%s<br />%s</html>", tuple.get(0), tuple.get(1));
-        JButton button = new JButton(htmlFormat);
-        return button;
+    protected String htmlFormatter(int index){
+        return String.format("<html>%s<br />%s</html>", list.get(index).get(0), list.get(index).get(1));
     }
 
-    public void actionPerformed(ActionEvent e) {
-
+    protected void customizeButton(JButton button){
     }
-
-    // public void setRegistrationListener(UIListener listener) {
-    // this.listener = listener;
-    // }
 }
