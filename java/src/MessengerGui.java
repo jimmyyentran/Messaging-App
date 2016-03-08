@@ -376,6 +376,23 @@ public class MessengerGui {
         }
     }//end
 
+    public List<List<String>> AllUsersInChat(String chatId){
+        try{
+            // String chatId= "0";
+            String query = String.format(
+                    "SELECT member\n" +
+                    "FROM chat_list WHERE chat_id = '%s'", chatId);
+            System.out.println(query);
+            // int userNum = esql.executeQueryAndPrintResult(query);
+            // System.out.println("Number Outputs: " + userNum);
+            // System.out.println();
+            return executeQueryAndReturnResult(query);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return null;
+        }
+    }//end
+
     public boolean CheckUser(String login){
         try{
             String query = String.format(

@@ -17,6 +17,18 @@ public class UIMessageList extends UIAbstractList
         return null;
     }
 
+    protected String htmlFormatterGroup(List<List<String>> l){
+        String html = String.format("<html>%s", l.get(0));
+        System.out.println(l.size());
+        for(int i = 1; i < l.size(); ++i){
+            html += String.format("<br />%s", l.get(i));
+        }
+        html += "</html>";
+        System.out.println(html);
+        return html;
+    }
+
+    @Override
     public void loadButtons(){
         removeAll();
         setList();
@@ -31,8 +43,9 @@ public class UIMessageList extends UIAbstractList
 
         for(int i = 0; i < list.size(); i++){
             users[i] = makeUser(i);
-            if(list.get(i).get(1).equals("group")){
-                //print group
+            //problem with comparison so use ascii numbers
+            if(103 == ((int)list.get(i).get(1).charAt(0))){
+                users[i].setText(htmlFormatterGroup(esql.AllUsersInChat(list.get(i).get(0))));
             } else {
                 users[i].setText(list.get(i).get(2));
             }
