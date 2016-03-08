@@ -14,7 +14,7 @@ public class UIBlockList extends UIAbstractList
     }
 
     protected String htmlFormatter(int index){
-        return list.get(index).get(0);
+        return list.get(index).get(0).trim();
     }
 
     protected void customizeButton(JButton button){}

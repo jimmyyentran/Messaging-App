@@ -14,7 +14,7 @@ public class UIContactList extends UIAbstractList
     }
 
     protected String htmlFormatter(int index){
-        return String.format("<html>%s<br />%s</html>", list.get(index).get(0), list.get(index).get(1));
+        return String.format("<html>%s<br />%s</html>", list.get(index).get(0).trim(), list.get(index).get(1).trim());
     }
 
     protected void customizeButton(JButton button){

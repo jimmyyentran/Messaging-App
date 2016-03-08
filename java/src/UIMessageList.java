@@ -18,10 +18,10 @@ public class UIMessageList extends UIAbstractList
     }
 
     protected String htmlFormatterGroup(List<List<String>> l){
-        String html = String.format("<html>%s", l.get(0));
+        String html = String.format("<html>%s", l.get(0).get(0).trim());
         System.out.println(l.size());
         for(int i = 1; i < l.size(); ++i){
-            html += String.format("<br />%s", l.get(i));
+            html += String.format("<br />%s", l.get(i).get(0).trim());
         }
         html += "</html>";
         System.out.println(html);
@@ -47,7 +47,7 @@ public class UIMessageList extends UIAbstractList
             if(103 == ((int)list.get(i).get(1).charAt(0))){
                 users[i].setText(htmlFormatterGroup(esql.AllUsersInChat(list.get(i).get(0))));
             } else {
-                users[i].setText(list.get(i).get(2));
+                users[i].setText(list.get(i).get(2).trim());
             }
         }
 
