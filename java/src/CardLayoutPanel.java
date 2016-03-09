@@ -19,7 +19,7 @@ public class CardLayoutPanel {
     }
 
     private JPanel makeContactPanel(){
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new GridLayout(0,1));
         panel.add(user);
         panel.add(remove);
         panel.add(newMessage);
