@@ -17,3 +17,6 @@ logfile
 *.vim
 
 *.nfs*
+
+*.idea
+*.iml

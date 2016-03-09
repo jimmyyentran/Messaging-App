@@ -3,7 +3,7 @@ import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.*;
 
-public class UIContactList extends UIAbstractList
+public class UIContactList extends UIAbstractList implements ActionListener
 {
     UIContactList(){
         super();
@@ -19,4 +19,16 @@ public class UIContactList extends UIAbstractList
 
     protected void customizeButton(JButton button){
     }
+
+    protected void setAllActionListeners(){
+        for(JButton a: users){
+            a.addActionListener(this);
+        }
+    }
+
+    public void actionPerformed(ActionEvent e){
+        String cmd = e.getActionCommand();
+        CardLayoutPanel.setContactUsername(list.get(Integer.parseInt(cmd)).get(0));
+    }
+
 }

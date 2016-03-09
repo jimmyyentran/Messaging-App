@@ -3,7 +3,7 @@ import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.*;
 
-public class UIBlockList extends UIAbstractList
+public class UIBlockList extends UIAbstractList implements ActionListener
 {
     UIBlockList(){
         super();
@@ -18,4 +18,15 @@ public class UIBlockList extends UIAbstractList
     }
 
     protected void customizeButton(JButton button){}
+
+    @Override
+    protected void setAllActionListeners() {
+        for(JButton a: users){
+            a.addActionListener(this);
+        }
+    }
+
+    public void actionPerformed(ActionEvent e){
+        String cmd = e.getActionCommand();
+    }
 }

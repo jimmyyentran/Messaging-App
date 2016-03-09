@@ -173,7 +173,7 @@ public class MessengerGui {
         while (rs.next()){
             List<String> record = new ArrayList<String>(); 
             for (int i=1; i<=numCol; ++i) 
-                record.add(rs.getString (i)); 
+                record.add(rs.getString (i).trim());
             result.add(record); 
         }//end while 
         stmt.close (); 
@@ -302,9 +302,7 @@ public class MessengerGui {
                 "VALUES((SELECT Usr.contact_list\n" +
                 "FROM Usr WHERE login = '%s'), '%s')", user, addedContact);
         System.out.println(query);
-        int userNum = executeQueryAndPrintResult(query);
-        System.out.println("Number Outputs: " + userNum);
-        System.out.println();
+        executeUpdate(query);
     }//end
 
     public void AddToBlock(String blockedContact) throws Exception{
@@ -313,9 +311,7 @@ public class MessengerGui {
                 "VALUES((SELECT Usr.block_list\n" +
                 "FROM Usr WHERE login = '%s'), '%s')", user, blockedContact);
         System.out.println(query);
-        int userNum = executeQueryAndPrintResult(query);
-        System.out.println("Number Outputs: " + userNum);
-        System.out.println();
+        executeUpdate(query);
     }//end
 
     public List<List<String>> ListContacts(){

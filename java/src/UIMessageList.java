@@ -3,7 +3,7 @@ import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.*;
 
-public class UIMessageList extends UIAbstractList
+public class UIMessageList extends UIAbstractList implements ActionListener
 {
     UIMessageList(){
         super();
@@ -57,5 +57,12 @@ public class UIMessageList extends UIAbstractList
     }
 
     protected void customizeButton(JButton button){
+    }
+
+    @Override
+    protected void setAllActionListeners() {
+        for(JButton a: users){
+            a.addActionListener(this);
+        }
     }
 }

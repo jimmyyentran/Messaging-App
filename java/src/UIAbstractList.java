@@ -4,10 +4,11 @@ import java.awt.Dimension;
 import java.awt.event.*;
 import java.util.*;
 
-public abstract class UIAbstractList extends JPanel implements ActionListener 
+public abstract class UIAbstractList extends JPanel
 {
     // private UIContactList listener;
     // private JPanel contact_list;
+    private UIAbstractListListener listener;
     private JScrollPane scrollpane;
     protected JButton[] users;
     protected MessengerGui esql;
@@ -21,6 +22,11 @@ public abstract class UIAbstractList extends JPanel implements ActionListener
     abstract protected void setList();
     abstract protected String htmlFormatter(int index);
     abstract protected void customizeButton(JButton button);
+    abstract protected void setAllActionListeners();
+
+    private void convertListToUsr(){
+
+    };
 
     public void loadButtons(){
         removeAll();
@@ -41,20 +47,25 @@ public abstract class UIAbstractList extends JPanel implements ActionListener
         for(JButton a : users){
             add(a);
         }
+
+        setAllActionListeners();
     }
 
     protected JButton makeUser(int index){
         JButton button = new JButton(htmlFormatter(index));
         button.setPreferredSize(new Dimension(100,50));
         // customizeButton(button);
+        button.setActionCommand(Integer.toString(index));
         return button;
     }
 
     public void actionPerformed(ActionEvent e) {
-
+        int index = Integer.parseInt(e.getActionCommand());
     }
 
-    // public void setRegistrationListener(UIListener listener) {
-    // this.listener = listener;
-    // }
+    public void setListener(UIAbstractListListener listener) {
+        this.listener = listener;
+    }
+
+
 }

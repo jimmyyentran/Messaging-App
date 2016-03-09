@@ -83,8 +83,8 @@ public class UI extends JPanel implements ActionListener
                         tabbedPane.loadUser();
                         tabbedPane.repaint();
                     }catch(Exception ev){
-                        // JOptionPane.showMessageDialog(this, ev.getMessage());
-                        JOptionPane.showMessageDialog(this, s + " is already a friend");
+                        JOptionPane.showMessageDialog(this, ev.getMessage());
+//                        JOptionPane.showMessageDialog(this, s + " is already a friend");
                     }
                 }else {
                     JOptionPane.showMessageDialog(this, "No user with the name " + s);

@@ -13,9 +13,9 @@ public class UITabbedPane extends JTabbedPane implements ActionListener
         contact_list = new UIContactList();
         blocked_list = new UIBlockList();
         message_list = new UIMessageList();
-        addTab("Message", new JScrollPane(message_list));
-        addTab("Contact", new JScrollPane(contact_list));
-        addTab("Blocked", new JScrollPane(blocked_list));
+        addTab("M", new JScrollPane(message_list));
+        addTab("C", new JScrollPane(contact_list));
+        addTab("B", new JScrollPane(blocked_list));
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -27,8 +27,6 @@ public class UITabbedPane extends JTabbedPane implements ActionListener
         blocked_list.loadButtons();
         message_list.loadButtons();
     }
-
-
 
     // public void setRegistrationListener(UIListener listener) {
         // this.listener = listener;
