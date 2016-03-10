@@ -78,6 +78,13 @@ public class UI extends JPanel implements ActionListener
             tabbedPane.reloadBlocked();
             tabbedPane.repaint();
         }
+
+        @Override
+        public void newMessageEventOccurred(String s) {
+            esql.AddNewPrivateChat(s);
+            tabbedPane.reloadMessages();
+            tabbedPane.repaint();
+        }
     };
 
     public void actionPerformed(ActionEvent e){

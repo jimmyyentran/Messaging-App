@@ -255,10 +255,11 @@ public class Messenger {
             // ListBlocked(esql);
             // AddToContact(esql);
 //             CheckUser(esql);
-//            GetMessages(esql);
-//            AllUsersInChat(esql);
-            RemoveFromContact(esql);
-            ListContacts(esql);
+            GetMessages(esql);
+            AllUsersInChat(esql);
+//            RemoveFromContact(esql);
+//            ListContacts(esql);
+//            AddNewPrivateChat(esql);
 
             // while(keepon) {
             // // These are sample SQL statements
@@ -408,21 +409,13 @@ public class Messenger {
         try{
             String login = "Eve";
             String target = "Jimmy";
-            String query = String.format(
-                    "INSERT INTO chat_list (chat_id, chat_type)" +
-                            "VALUES((SELECT Usr.contact_list\n" +
-                            "FROM Usr WHERE login = '%s'), '%s')", login, target);
-            System.out.println(query);
-            int userNum = esql.executeQueryAndPrintResult(query);
-            System.out.println("Number Outputs: " + userNum);
-            System.out.println();
-
-            esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('block')");
-            int block_id = esql.getCurrSeqVal("user_list_list_id_seq");
-            esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('contact')");
-            int contact_id = esql.getCurrSeqVal("user_list_list_id_seq");
-
-            String query = String.format("INSERT INTO USR (phoneNum, login, password, status, block_list, contact_list) VALUES ('%s','%s','%s', '%s',%s,%s)", phone, login, password, "", block_id, contact_id);
+            String query = String.format("INSERT INTO chat(chat_type, init_sender) VALUES ('private', '%s')", login);
+            esql.executeUpdate(query);
+            int chat_id = esql.getCurrSeqVal("chat_chat_id_seq");
+            String query2 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, login);
+            esql.executeUpdate(query2);
+            String query3 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, target);
+            esql.executeUpdate(query3);
         }catch(Exception e){
             System.err.println (e.getMessage ());
         }

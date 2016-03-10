@@ -47,6 +47,10 @@ public class UITabbedPane extends JTabbedPane implements ActionListener
         blocked_list.loadButtons();
     }
 
+    public void reloadMessages(){
+        message_list.loadButtons();
+    }
+
     // public void setRegistrationListener(UIListener listener) {
         // this.listener = listener;
     // }

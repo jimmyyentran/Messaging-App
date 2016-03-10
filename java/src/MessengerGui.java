@@ -443,6 +443,22 @@ public class MessengerGui {
         }
     }//end
 
+    public void AddNewPrivateChat(String target){
+        try{
+            //check if
+
+            String query = String.format("INSERT INTO chat(chat_type, init_sender) VALUES ('private', '%s')", getUser());
+            executeUpdate(query);
+            int chat_id = getCurrSeqVal("chat_chat_id_seq");
+            String query2 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, getUser());
+            executeUpdate(query2);
+            String query3 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, target);
+            executeUpdate(query3);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
+
     public static void NewMessage(MessengerGui esql){
         // Your code goes here.
         // ...
