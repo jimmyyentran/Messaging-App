@@ -19,6 +19,7 @@ public class UI extends JPanel implements ActionListener
         tabbedPane = new UITabbedPane();
         toolbar = new JToolBar();
         CardLayoutPanel cardLayoutPanel = new CardLayoutPanel();
+        cardLayoutPanel.setListener(cardLayoutPanelListener);
         messageBoard = cardLayoutPanel.getPanel();
         splitPane =  new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tabbedPane, messageBoard);
         esql = MessengerGui.getInstance();
@@ -64,6 +65,20 @@ public class UI extends JPanel implements ActionListener
         tabbedPane.loadUser();
     }
 
+    private CardLayoutPanelListener cardLayoutPanelListener = new CardLayoutPanelListener() {
+        @Override
+        public void removeContactEventOccurred(String s) {
+            esql.RemoveFromContact(s);
+            tabbedPane.reloadContacts();
+            tabbedPane.repaint();
+        }
+        @Override
+        public void removeBlockEventOccurred(String s) {
+            esql.RemoveFromBlocked(s);
+            tabbedPane.reloadBlocked();
+            tabbedPane.repaint();
+        }
+    };
 
     public void actionPerformed(ActionEvent e){
         String cmd = e.getActionCommand();
@@ -77,7 +92,7 @@ public class UI extends JPanel implements ActionListener
                     JOptionPane.PLAIN_MESSAGE
                     );
             if((s != null) && (s.length() > 0)){
-                if(esql.CheckUser(s)){
+                if(!esql.GetUser(s).isEmpty()){
                     try{
                         esql.AddToContact(s);
                         tabbedPane.loadUser();
@@ -98,7 +113,7 @@ public class UI extends JPanel implements ActionListener
                     JOptionPane.PLAIN_MESSAGE
                     );
             if((s != null) && (s.length() > 0)){
-                if(esql.CheckUser(s)){
+                if(!esql.GetUser(s).isEmpty()){
                     try{
                         esql.AddToBlock(s);
                         tabbedPane.loadUser();

@@ -28,5 +28,6 @@ public class UIBlockList extends UIAbstractList implements ActionListener
 
     public void actionPerformed(ActionEvent e){
         String cmd = e.getActionCommand();
+        CardLayoutPanel.setBlockUsername(list.get(Integer.parseInt(cmd)).get(0));
     }
 }

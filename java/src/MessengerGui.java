@@ -35,6 +35,8 @@ public class MessengerGui {
     private Connection _connection = null;
     private static MessengerGui instance = null;
     private static String user = null;
+    private static String block_list;
+    private static String contact_list;
 
     // handling the keyboard inputs through a BufferedReader
     // This variable can be global for convenience.
@@ -77,9 +79,19 @@ public class MessengerGui {
         return user;
     }
 
+    public static String getBlockList() {
+        return block_list;
+    }
+
+    public static String getContactList() {
+        return contact_list;
+    }
+
     //don't think I'd need synchronized for simple project
-    public static void setUser(String username){
+    public static void setUser(String username, String block, String contact){
         user = username;
+        block_list = block;
+        contact_list = contact;
     }
 
     /**
@@ -268,7 +280,8 @@ public class MessengerGui {
             executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('contact')");
             int contact_id = getCurrSeqVal("user_list_list_id_seq");
 
-            String query = String.format("INSERT INTO USR (phoneNum, login, password, block_list, contact_list) VALUES ('%s','%s','%s',%s,%s)", phone, login, password, block_id, contact_id);
+            String query = String.format("INSERT INTO USR (phoneNum, login, password, status, block_list, contact_list) " +
+                    "VALUES ('%s','%s','%s', '%s',%s,%s)", phone, login, password, "", block_id, contact_id);
 
             executeUpdate(query);
             System.out.println ("User successfully created!");
@@ -389,23 +402,44 @@ public class MessengerGui {
         }
     }//end
 
-    public boolean CheckUser(String login){
+    public List<List<String>> GetUser(String login){
         try{
             String query = String.format(
-                    "SELECT Usr.login\n" +
+                    "SELECT *\n" +
                     "FROM Usr WHERE login = '%s'", login);
             System.out.println(query);
-            int userNum = executeQueryAndPrintResult(query);
-            System.out.println("Number Outputs: " + userNum);
-            System.out.println();
-            if(userNum == 0){
-                return false;
-            } else {
-                return true;
-            }
+//            int userNum = executeQueryAndPrintResult(query);
+//            System.out.println("Number Outputs: " + userNum);
+//            System.out.println();
+            List<List<String>> ret = executeQueryAndReturnResult(query);
+            return ret;
         }catch(Exception e){
             System.err.println (e.getMessage ());
-            return false;
+            return null;
+        }
+    }//end
+
+    public void RemoveFromContact(String target){
+        try{
+            String query = String.format(
+                    "DELETE FROM user_list_contains\n" +
+                            "WHERE list_id = %s and list_member = '%s'", getContactList(), target);
+            System.out.println(query);
+            executeUpdate(query);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
+
+    public void RemoveFromBlocked(String target){
+        try{
+            String query = String.format(
+                    "DELETE FROM user_list_contains\n" +
+                            "WHERE list_id = %s and list_member = '%s'", getBlockList(), target);
+            System.out.println(query);
+            executeUpdate(query);
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
         }
     }//end
 

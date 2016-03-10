@@ -1,6 +1,7 @@
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class CardLayoutView {
     private JPanel cards;
@@ -39,7 +40,8 @@ public class CardLayoutView {
             public void submitEventOccured(String login, String password, String phone){
                 try{
                     esql.CreateUser(login, password, phone);
-                    esql.setUser(login);
+                    List<List<String>> ret = esql.GetUser(login);
+                    esql.setUser(authorizedUser, ret.get(0).get(4), ret.get(0).get(5));
                     cardLayout.show(cards, "ui");
                 }
                 catch(Exception e){
@@ -58,7 +60,9 @@ public class CardLayoutView {
             public void loginEventOccured(String login, String password){
                 authorizedUser = esql.LogIn(login, password);
                 if(authorizedUser != null){
-                    esql.setUser(authorizedUser);
+                    List<List<String>> ret = esql.GetUser(authorizedUser);
+                    System.out.println(ret);
+                    esql.setUser(authorizedUser, ret.get(0).get(4), ret.get(0).get(5));
                     ui.loadUser();
                     cardLayout.show(cards, "ui");
                 }

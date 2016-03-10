@@ -120,7 +120,7 @@ public class Messenger {
                 outputHeader = false;
             }
             for (int i=1; i<=numCol; ++i)
-                System.out.print (rs.getString (i) + "\t");
+                System.out.print (rs.getString (i).trim() + "\t");
             System.out.println ();
             ++rowCount;
         }//end while
@@ -158,7 +158,7 @@ public class Messenger {
         while (rs.next()){
             List<String> record = new ArrayList<String>(); 
             for (int i=1; i<=numCol; ++i) 
-                record.add(rs.getString (i)); 
+                record.add(rs.getString (i).trim());
             result.add(record); 
         }//end while 
         stmt.close (); 
@@ -250,12 +250,15 @@ public class Messenger {
 
             boolean keepon = true;
 
+//            CreateUser(esql);
             // ListContacts(esql);
             // ListBlocked(esql);
             // AddToContact(esql);
-            // CheckUser(esql);
-            GetMessages(esql);
-            AllUsersInChat(esql);
+//             CheckUser(esql);
+//            GetMessages(esql);
+//            AllUsersInChat(esql);
+            RemoveFromContact(esql);
+            ListContacts(esql);
 
             // while(keepon) {
             // // These are sample SQL statements
@@ -353,7 +356,7 @@ public class Messenger {
             esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('contact')");
             int contact_id = esql.getCurrSeqVal("user_list_list_id_seq");
 
-            String query = String.format("INSERT INTO USR (phoneNum, login, password, block_list, contact_list) VALUES ('%s','%s','%s',%s,%s)", phone, login, password, block_id, contact_id);
+            String query = String.format("INSERT INTO USR (phoneNum, login, password, status, block_list, contact_list) VALUES ('%s','%s','%s', '%s',%s,%s)", phone, login, password, "", block_id, contact_id);
 
             esql.executeUpdate(query);
             System.out.println ("User successfully created!");
@@ -396,6 +399,30 @@ public class Messenger {
             int userNum = esql.executeQueryAndPrintResult(query);
             System.out.println("Number Outputs: " + userNum);
             System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
+
+    public static void AddNewPrivateChat(Messenger esql){
+        try{
+            String login = "Eve";
+            String target = "Jimmy";
+            String query = String.format(
+                    "INSERT INTO chat_list (chat_id, chat_type)" +
+                            "VALUES((SELECT Usr.contact_list\n" +
+                            "FROM Usr WHERE login = '%s'), '%s')", login, target);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+
+            esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('block')");
+            int block_id = esql.getCurrSeqVal("user_list_list_id_seq");
+            esql.executeUpdate("INSERT INTO USER_LIST(list_type) VALUES ('contact')");
+            int contact_id = esql.getCurrSeqVal("user_list_list_id_seq");
+
+            String query = String.format("INSERT INTO USR (phoneNum, login, password, status, block_list, contact_list) VALUES ('%s','%s','%s', '%s',%s,%s)", phone, login, password, "", block_id, contact_id);
         }catch(Exception e){
             System.err.println (e.getMessage ());
         }
@@ -449,15 +476,24 @@ public class Messenger {
 
     public static void CheckUser(Messenger esql){
         try{
-            String login = "Even";
+            String login = "Jimmy";
             String query = String.format(
-                    "SELECT Usr.login\n" +
+                    "SELECT *\n" +
                     "FROM Usr WHERE login = '%s'", login);
             System.out.println(query);
-            int userNum = esql.executeQueryAndPrintResult(query);
-            System.out.println("Number Outputs: " + userNum);
-            System.out.println();
+//            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println(esql.executeQueryAndReturnResult(query));
+            boolean i = esql.executeQueryAndReturnResult(query).isEmpty();
+            if(i){
+                System.out.println("YES");
+            } else {
+                System.out.println("NO");
+            }
+//            System.out.println(i);
+////            System.out.println("Number Outputs: " + userNum);
+//            System.out.println();
         }catch(Exception e){
+            System.err.println("ERROR");
             System.err.println (e.getMessage ());
         }
     }//end
@@ -485,6 +521,22 @@ public class Messenger {
             String query = String.format(
                     "SELECT member\n" +
                     "FROM chat_list WHERE chat_id = '%s'", chatId);
+            System.out.println(query);
+            int userNum = esql.executeQueryAndPrintResult(query);
+            System.out.println("Number Outputs: " + userNum);
+            System.out.println();
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+        }
+    }//end
+
+    public static void RemoveFromContact(Messenger esql){
+        try{
+            String list = "7781";
+            String target = "Zora.Boyle";
+            String query = String.format(
+                    "DELETE FROM user_list_contains\n" +
+                    "WHERE list_id = %s and list_member = '%s'", list, target);
             System.out.println(query);
             int userNum = esql.executeQueryAndPrintResult(query);
             System.out.println("Number Outputs: " + userNum);
