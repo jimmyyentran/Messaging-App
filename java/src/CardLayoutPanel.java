@@ -10,10 +10,18 @@ public class CardLayoutPanel implements ActionListener{
     private JButton removeC, removeB, newMessage, block;
     private static String contactUsername = "none";
     private static String blockUsername = "none";
+    private static String chatId= "none";
     private static JLabel contactLabel = new JLabel(contactUsername);
     private static JLabel blockLabel = new JLabel(blockUsername);
     private static JPanel contactPanel, blockPanel, messagePanel;
-    private JList messageList;
+    private static JList messageList;
+    private JTextField textField;
+    private Action action = new AbstractAction() {
+        public void actionPerformed(ActionEvent e){
+            String text = textField.getText();
+            textField.setText("");
+        }
+    };
 
     public CardLayoutPanel() {
         removeC = new JButton("Remove");
@@ -31,6 +39,8 @@ public class CardLayoutPanel implements ActionListener{
         cards.add(messagePanel, "messagePanel");
         cards.add(contactPanel, "contactPanel");
         cards.add(blockPanel, "blockPanel");
+
+
     }
 
     private JPanel makeContactPanel(){
@@ -54,18 +64,32 @@ public class CardLayoutPanel implements ActionListener{
 
         //messageList
         Vector<String> vector = new Vector<String>();
-        vector.add("Test1");
-        vector.add("Test2");
-        vector.add("Test2");
-        messageList = new JList(vector);
+        messageList = new JList();
+        messageList.setCellRenderer(new MyCellRenderer(80));
 
         //scrollPane
         JScrollPane scrollPane = new JScrollPane(messageList);
 
         //splitPane
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, new JPanel());
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, makeTextInputPanel());
         splitPane.setDividerLocation(200);
         panel.add(splitPane, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel makeTextInputPanel(){
+        JPanel panel = new JPanel();
+
+        JButton button = new JButton("Send");
+        button.addActionListener(action);
+
+        textField = new JTextField();
+        textField.addActionListener(action);
+
+        panel.setLayout(new BorderLayout());
+        panel.add(textField, BorderLayout.CENTER);
+        panel.add(button, BorderLayout.LINE_END);
+
         return panel;
     }
 
@@ -81,6 +105,13 @@ public class CardLayoutPanel implements ActionListener{
         contactLabel.setText(name);
         contactPanel.repaint();
         cardLayout.show(cards, "blockPanel");
+    }
+
+    public static void setList(Vector<String> m, String s){
+        chatId = s;
+        messageList.setListData(m);
+        messageList.repaint();
+        cardLayout.show(cards, "messagePanel");
     }
 
     public JPanel getPanel() {
@@ -104,5 +135,30 @@ public class CardLayoutPanel implements ActionListener{
             listener.newMessageEventOccurred(contactUsername);
             cardLayout.show(cards, "messagePanel");
         }
+    }
+    class MyCellRenderer extends DefaultListCellRenderer {
+        public static final String HTML_1 = "<html><body style='width: ";
+        public static final String HTML_2 = "px'>";
+        public static final String HTML_3 = "</html>";
+        private int width;
+
+        public MyCellRenderer(int width) {
+            this.width = width;
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value,
+                                                      int index, boolean isSelected, boolean cellHasFocus) {
+//            String text = HTML_1 + String.valueOf(width) + HTML_2 + value.toString()
+//                    + HTML_3;
+            setText(value.toString());
+//            return super.getListCellRendererComponent(list, text, index, isSelected,
+//                    cellHasFocus);
+            if(index % 2 == 0) setBackground(Color.pink);
+            else setBackground(Color.white);
+
+            return this;
+        }
+
     }
 }

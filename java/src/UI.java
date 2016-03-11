@@ -16,11 +16,11 @@ public class UI extends JPanel implements ActionListener
     UI(){
         super(new BorderLayout());
 
-        tabbedPane = new UITabbedPane();
         toolbar = new JToolBar();
         CardLayoutPanel cardLayoutPanel = new CardLayoutPanel();
         cardLayoutPanel.setListener(cardLayoutPanelListener);
         messageBoard = cardLayoutPanel.getPanel();
+        tabbedPane = new UITabbedPane();
         splitPane =  new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tabbedPane, messageBoard);
         esql = MessengerGui.getInstance();
 

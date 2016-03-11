@@ -13,6 +13,7 @@ public abstract class UIAbstractList extends JPanel
     protected JButton[] users;
     protected MessengerGui esql;
     protected List<List<String>> list;
+    protected ButtonGroup buttonGroup = new ButtonGroup();
 
     UIAbstractList(){
         setLayout(new GridLayout(0,1));
@@ -32,11 +33,11 @@ public abstract class UIAbstractList extends JPanel
         removeAll();
         setList();
 
-        for(List<String> tuple : list){
-            for(String attribute : tuple){
-                System.out.println(attribute);
-            }
-        }
+//        for(List<String> tuple : list){
+//            for(String attribute : tuple){
+//                System.out.println(attribute);
+//            }
+//        }
 
         users = new JButton[list.size()];
 
@@ -46,9 +47,11 @@ public abstract class UIAbstractList extends JPanel
 
         for(JButton a : users){
             add(a);
+            buttonGroup.add(a);
         }
 
         setAllActionListeners();
+
     }
 
     protected JButton makeUser(int index){
@@ -59,13 +62,11 @@ public abstract class UIAbstractList extends JPanel
         return button;
     }
 
-    public void actionPerformed(ActionEvent e) {
-        int index = Integer.parseInt(e.getActionCommand());
-    }
+//    public void actionPerformed(ActionEvent e) {
+//        int index = Integer.parseInt(e.getActionCommand());
+//    }
 
     public void setListener(UIAbstractListListener listener) {
         this.listener = listener;
     }
-
-
 }

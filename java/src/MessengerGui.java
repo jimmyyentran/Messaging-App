@@ -147,7 +147,7 @@ public class MessengerGui {
                 outputHeader = false;
             }
             for (int i=1; i<=numCol; ++i)
-                System.out.print (rs.getString (i) + "\t");
+                System.out.print (rs.getString (i).trim()  + "\t");
             System.out.println ();
             ++rowCount;
         }//end while
@@ -229,7 +229,7 @@ public class MessengerGui {
     public int getCurrSeqVal(String sequence) throws SQLException {
         Statement stmt = this._connection.createStatement ();
 
-        ResultSet rs = stmt.executeQuery (String.format("Select currval('%s')", sequence));
+        ResultSet rs = stmt.executeQuery (String.format("Select currval('%s')\n", sequence));
         if (rs.next())
             return rs.getInt(1);
         return -1;
@@ -281,7 +281,7 @@ public class MessengerGui {
             int contact_id = getCurrSeqVal("user_list_list_id_seq");
 
             String query = String.format("INSERT INTO USR (phoneNum, login, password, status, block_list, contact_list) " +
-                    "VALUES ('%s','%s','%s', '%s',%s,%s)", phone, login, password, "", block_id, contact_id);
+                    "VALUES ('%s','%s','%s', '%s',%s,%s)\n", phone, login, password, "", block_id, contact_id);
 
             executeUpdate(query);
             System.out.println ("User successfully created!");
@@ -296,7 +296,7 @@ public class MessengerGui {
      **/
     public String LogIn(String login, String password){
         try{
-            String query = String.format("SELECT * FROM Usr WHERE login = '%s' AND password = '%s'", login, password);
+            String query = String.format("SELECT * FROM Usr WHERE login = '%s' AND password = '%s'\n", login, password);
             int userNum = executeQuery(query);
             if (userNum > 0){
                 System.out.println("Login authorized");
@@ -313,7 +313,7 @@ public class MessengerGui {
         String query = String.format(
                 "INSERT INTO User_list_contains (list_id, list_member)" +
                 "VALUES((SELECT Usr.contact_list\n" +
-                "FROM Usr WHERE login = '%s'), '%s')", user, addedContact);
+                "FROM Usr WHERE login = '%s'), '%s')\n", user, addedContact);
         System.out.println(query);
         executeUpdate(query);
     }//end
@@ -322,7 +322,7 @@ public class MessengerGui {
         String query = String.format(
                 "INSERT INTO User_list_contains (list_id, list_member)" +
                 "VALUES((SELECT Usr.block_list\n" +
-                "FROM Usr WHERE login = '%s'), '%s')", user, blockedContact);
+                "FROM Usr WHERE login = '%s'), '%s')\n", user, blockedContact);
         System.out.println(query);
         executeUpdate(query);
     }//end
@@ -335,7 +335,7 @@ public class MessengerGui {
                     "SELECT User_list_contains.list_member \n" +
                     "FROM User_list_contains WHERE list_id=\n(" +
                     "SELECT Usr.contact_list \n" +
-                    "FROM Usr WHERE login = '%s'))", user);
+                    "FROM Usr WHERE login = '%s'))\n", user);
             System.out.println(query);
             // int userNum = executeQueryAndPrintResult(query);
             // System.out.println("Number Outputs: " + userNum);
@@ -355,7 +355,7 @@ public class MessengerGui {
                     "SELECT User_list_contains.list_member \n" +
                     "FROM User_list_contains WHERE list_id=\n(" +
                     "SELECT Usr.block_list \n" +
-                    "FROM Usr WHERE login = '%s'))", user);
+                    "FROM Usr WHERE login = '%s'))\n", user);
             System.out.println(query);
             // int userNum = executeQueryAndPrintResult(query);
             // System.out.println("Number Outputs: " + userNum);
@@ -373,11 +373,11 @@ public class MessengerGui {
                     "SELECT *\n" +
                     "FROM chat WHERE chat_id IN (\n" +
                     "SELECT chat_id\n" +
-                    "FROM chat_list WHERE member = '%s')", user);
+                    "FROM chat_list WHERE member = '%s')\n", user);
             System.out.println(query);
-            // int userNum = esql.executeQueryAndPrintResult(query);
+             int userNum = executeQueryAndPrintResult(query);
+             System.out.println();
             // System.out.println("Number Outputs: " + userNum);
-            // System.out.println();
             return executeQueryAndReturnResult(query);
         }catch(Exception e){
             System.err.println (e.getMessage ());
@@ -390,9 +390,10 @@ public class MessengerGui {
             // String chatId= "0";
             String query = String.format(
                     "SELECT member\n" +
-                    "FROM chat_list WHERE chat_id = '%s'", chatId);
+                    "FROM chat_list WHERE chat_id = '%s'\n", chatId);
             System.out.println(query);
-            // int userNum = esql.executeQueryAndPrintResult(query);
+             int userNum = executeQueryAndPrintResult(query);
+             System.out.println();
             // System.out.println("Number Outputs: " + userNum);
             // System.out.println();
             return executeQueryAndReturnResult(query);
@@ -406,7 +407,7 @@ public class MessengerGui {
         try{
             String query = String.format(
                     "SELECT *\n" +
-                    "FROM Usr WHERE login = '%s'", login);
+                    "FROM Usr WHERE login = '%s'\n", login);
             System.out.println(query);
 //            int userNum = executeQueryAndPrintResult(query);
 //            System.out.println("Number Outputs: " + userNum);
@@ -423,7 +424,7 @@ public class MessengerGui {
         try{
             String query = String.format(
                     "DELETE FROM user_list_contains\n" +
-                            "WHERE list_id = %s and list_member = '%s'", getContactList(), target);
+                            "WHERE list_id = %s and list_member = '%s'\n", getContactList(), target);
             System.out.println(query);
             executeUpdate(query);
         }catch(Exception e){
@@ -435,7 +436,7 @@ public class MessengerGui {
         try{
             String query = String.format(
                     "DELETE FROM user_list_contains\n" +
-                            "WHERE list_id = %s and list_member = '%s'", getBlockList(), target);
+                            "WHERE list_id = %s and list_member = '%s'\n", getBlockList(), target);
             System.out.println(query);
             executeUpdate(query);
         }catch(Exception e){
@@ -447,29 +448,33 @@ public class MessengerGui {
         try{
             //check if
 
-            String query = String.format("INSERT INTO chat(chat_type, init_sender) VALUES ('private', '%s')", getUser());
+            String query = String.format("INSERT INTO chat(chat_type, init_sender) VALUES ('private', '%s')\n", getUser());
             executeUpdate(query);
             int chat_id = getCurrSeqVal("chat_chat_id_seq");
-            String query2 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, getUser());
+            String query2 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')\n", chat_id, getUser());
             executeUpdate(query2);
-            String query3 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, target);
+            String query3 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')\n", chat_id, target);
             executeUpdate(query3);
         }catch(Exception e){
             System.err.println (e.getMessage ());
         }
     }//end
 
-    public static void NewMessage(MessengerGui esql){
-        // Your code goes here.
-        // ...
-        // ...
-    }//end 
-
-
-    public static void Query6(MessengerGui esql){
-        // Your code goes here.
-        // ...
-        // ...
-    }//end Query6
-
+    public List<List<String>> GetAllMessagesInChat(String chatId) {
+        try {
+            String query = String.format(
+                    "SELECT *\n" +
+                            "FROM message WHERE chat_id = %s\n" +
+                            "ORDER BY msg_timestamp ASC\n", chatId);
+            System.out.println(query);
+            int userNum = executeQueryAndPrintResult(query);
+            System.out.println();
+//            System.out.println("Number Outputs: " + userNum);
+            List<List<String>> ret = executeQueryAndReturnResult(query);
+            return ret;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
+    }//end
 }//end MessengerGui
