@@ -460,6 +460,16 @@ public class MessengerGui {
         }
     }//end
 
+    public void AddNewMessageToChat(String message, String chat_id) {
+        try {
+            String query = String.format("INSERT INTO message(msg_text, msg_timestamp, sender_login, chat_id)\n" +
+                    "VALUES ('%s', (select LOCALTIMESTAMP(2)), '%s', '%s')", message, user, chat_id);
+            executeUpdate(query);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }//end
+
     public List<List<String>> GetAllMessagesInChat(String chatId) {
         try {
             String query = String.format(

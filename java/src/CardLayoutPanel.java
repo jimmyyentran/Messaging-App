@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 
 public class CardLayoutPanel implements ActionListener{
@@ -10,16 +11,29 @@ public class CardLayoutPanel implements ActionListener{
     private JButton removeC, removeB, newMessage, block;
     private static String contactUsername = "none";
     private static String blockUsername = "none";
-    private static String chatId= "none";
+    private static String chatId= null;
     private static JLabel contactLabel = new JLabel(contactUsername);
     private static JLabel blockLabel = new JLabel(blockUsername);
     private static JPanel contactPanel, blockPanel, messagePanel;
     private static JList messageList;
     private JTextField textField;
+    private static JScrollBar scrollBar;
     private Action action = new AbstractAction() {
         public void actionPerformed(ActionEvent e){
             String text = textField.getText();
-            textField.setText("");
+            if(chatId != null){
+                MessengerGui.getInstance().AddNewMessageToChat(text, chatId);
+                messageList.setListData(MessengerGui.getInstance().GetAllMessagesInChat(chatId).toArray());
+                SwingUtilities.invokeLater(new Runnable(){
+                    @Override
+                    public void run() {
+                        scrollBar.setValue(scrollBar.getMaximum());
+                    }
+                });
+                textField.setText("");
+            }else {
+                throw new RuntimeException("Chat id not set");
+            }
         }
     };
 
@@ -65,10 +79,11 @@ public class CardLayoutPanel implements ActionListener{
         //messageList
         Vector<String> vector = new Vector<String>();
         messageList = new JList();
-        messageList.setCellRenderer(new MyCellRenderer(80));
+        messageList.setCellRenderer(new MyCellRenderer(360));
 
         //scrollPane
         JScrollPane scrollPane = new JScrollPane(messageList);
+        scrollBar = scrollPane.getVerticalScrollBar();
 
         //splitPane
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, makeTextInputPanel());
@@ -107,10 +122,18 @@ public class CardLayoutPanel implements ActionListener{
         cardLayout.show(cards, "blockPanel");
     }
 
-    public static void setList(Vector<String> m, String s){
+    public static void setMessageList(String s){
         chatId = s;
-        messageList.setListData(m);
-        messageList.repaint();
+        messageList.setListData(MessengerGui.getInstance().GetAllMessagesInChat(s).toArray());
+        messageList.validate();
+//        messageList.ensureIndexIsVisible(messageList.getMaxSelectionIndex());
+        SwingUtilities.invokeLater(new Runnable(){
+            @Override
+            public void run() {
+                scrollBar.setValue(scrollBar.getMaximum());
+            }
+        });
+        scrollBar.setValue(scrollBar.getMaximum());
         cardLayout.show(cards, "messagePanel");
     }
 
@@ -139,11 +162,17 @@ public class CardLayoutPanel implements ActionListener{
     class MyCellRenderer extends DefaultListCellRenderer {
         public static final String HTML_1 = "<html><body style='width: ";
         public static final String HTML_2 = "px'>";
-        public static final String HTML_3 = "</html>";
         private int width;
 
         public MyCellRenderer(int width) {
             this.width = width;
+        }
+
+        private String htmlFormatterMessage(List<String> l){
+            String html = HTML_1 + String.valueOf(width) + "\n" + HTML_2;
+            html += String.format("%s %s<br>%s\n", l.get(3), l.get(2), l.get(1));
+            html += "</html>";
+            return html;
         }
 
         @Override
@@ -151,14 +180,36 @@ public class CardLayoutPanel implements ActionListener{
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 //            String text = HTML_1 + String.valueOf(width) + HTML_2 + value.toString()
 //                    + HTML_3;
-            setText(value.toString());
+//                    cellHasFocus);
+            String text = htmlFormatterMessage((List<String>)value);
+//            setText(value.toString());
+
+            Component c = super.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
+            if(index % 2 == 0) {
+                c.setBackground(Color.pink);
+            } else {
+                c.setBackground(Color.white);
+            }
+
+//            return this;
+            return c;
+        }
+
+//        public Component getListCellRendererComponent(JList list, List<String> value,
+//                                                      int index, boolean isSelected, boolean cellHasFocus) {
+////            String text = HTML_1 + String.valueOf(width) + HTML_2 + value.toString()
+////                    + HTML_3;
+////            return super.getListCellRendererComponent(list, text, index, isSelected,
+////                    cellHasFocus);
+//            String text = htmlFormatterMessage(value);
+//            System.out.println(text);
+////            if(index % 2 == 0) setBackground(Color.pink);
+////            else setBackground(Color.white);
+//
+////            return this;
 //            return super.getListCellRendererComponent(list, text, index, isSelected,
 //                    cellHasFocus);
-            if(index % 2 == 0) setBackground(Color.pink);
-            else setBackground(Color.white);
-
-            return this;
-        }
+//        }
 
     }
 }

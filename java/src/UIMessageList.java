@@ -98,6 +98,8 @@ public class UIMessageList extends UIAbstractList implements ActionListener
     public void actionPerformed(ActionEvent e){
         String cmd = e.getActionCommand();
         String chatId = list.get(Integer.parseInt(cmd)).get(0);
-        CardLayoutPanel.setList(htmlFormatterMessageList(messageList.get(chatId)), chatId);
+//        CardLayoutPanel.setList(htmlFormatterMessageList(messageList.get(chatId)), chatId);
+//        CardLayoutPanel.setMessageList(messageList.get(chatId), chatId);
+        CardLayoutPanel.setMessageList(chatId);
     }
 }

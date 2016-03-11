@@ -259,6 +259,7 @@ public class Messenger {
 //            RemoveFromContact(esql);
 //            ListContacts(esql);
 //            AddNewPrivateChat(esql);
+            AddNewMessageToChat(esql);
             GetAllMessagesInChat(esql);
 
             // while(keepon) {
@@ -421,6 +422,19 @@ public class Messenger {
         }
     }//end
 
+    public static void AddNewMessageToChat(Messenger esql) {
+        try {
+            String login = "Eve";
+            String message = "TEST";
+            String chat_id = "5001";
+            String query = String.format("INSERT INTO message(msg_text, msg_timestamp, sender_login, chat_id)\n" +
+                    "VALUES ('%s', (select LOCALTIMESTAMP(2)), '%s', '%s')", message, login, chat_id);
+            esql.executeUpdate(query);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }//end
+
     public static List<List<String>> ListContacts(Messenger esql) {
         try {
             String login = "Eve";
@@ -525,7 +539,7 @@ public class Messenger {
 
     public static void GetAllMessagesInChat(Messenger esql) {
         try {
-            String chatId = "0";
+            String chatId = "5001";
             String query = String.format(
                     "SELECT *\n" +
                     "FROM message WHERE chat_id = %s\n" +
