@@ -2,7 +2,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
+import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class CardLayoutPanel implements ActionListener{
     private CardLayoutPanelListener listener;
@@ -18,6 +20,11 @@ public class CardLayoutPanel implements ActionListener{
     private static JList messageList;
     private JTextField textField;
     private static JScrollBar scrollBar;
+    private JPanel topStatus;
+    private static JLabel topLabel;
+    private static JTable table;
+    private static JButton addToChat;
+    private static JButton removeFromChat;
     private Action action = new AbstractAction() {
         public void actionPerformed(ActionEvent e){
             String text = textField.getText();
@@ -43,6 +50,7 @@ public class CardLayoutPanel implements ActionListener{
         newMessage = new JButton("New Message");
 
         removeC.addActionListener(this);
+        removeB.addActionListener(this);
         newMessage.addActionListener(this);
 
         cards = new JPanel(cardLayout);
@@ -53,8 +61,18 @@ public class CardLayoutPanel implements ActionListener{
         cards.add(messagePanel, "messagePanel");
         cards.add(contactPanel, "contactPanel");
         cards.add(blockPanel, "blockPanel");
+    }
 
+    public static String getChatId() throws Exception{
+        if(chatId != null){
+            return chatId;
+        }else {
+            throw new Exception("No chat is selected. Please select or create new chat.");
+        }
+    }
 
+    public static void setChatId(String s){
+        chatId = s;
     }
 
     private JPanel makeContactPanel(){
@@ -74,12 +92,13 @@ public class CardLayoutPanel implements ActionListener{
 
     private JPanel makeMessagePanel(){
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        panel.setLayout(new BorderLayout(0,0));
 
         //messageList
         Vector<String> vector = new Vector<String>();
         messageList = new JList();
-        messageList.setCellRenderer(new MyCellRenderer(360));
+        messageList.setCellRenderer(new MyCellRenderer(300));
+
 
         //scrollPane
         JScrollPane scrollPane = new JScrollPane(messageList);
@@ -88,7 +107,38 @@ public class CardLayoutPanel implements ActionListener{
         //splitPane
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, makeTextInputPanel());
         splitPane.setDividerLocation(200);
+
+        //Message and status
+        topStatus = new JPanel(new FlowLayout());
+        topStatus.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        ImageIcon add = new ImageIcon("images/add_16.gif");
+        ImageIcon remove = new ImageIcon("images/block_16.gif");
+
+        addToChat = new JButton(add);
+        removeFromChat = new JButton(remove);
+
+        addToChat.setVisible(false);
+        removeFromChat.setVisible(false);
+
+        addToChat.addActionListener(this);
+        removeFromChat.addActionListener(this);
+
+        topStatus.add(removeFromChat);
+        topStatus.add(addToChat);
+//        String[] column = {"1", "2", "3"};
+//        String[][] data = {{"a", "a2", "a3"}};
+//        table = new JTable(data, column);
+//        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+//        table.setTableHeader(null);
+//
+//        JButton btn = new JButton();
+//        JScrollPane pane = new JScrollPane(table);
+
+//        topStatus.add(pane, BorderLayout.CENTER);
+//        topStatus.add(btn, BorderLayout.LINE_END);
+
         panel.add(splitPane, BorderLayout.CENTER);
+        panel.add(topStatus, BorderLayout.PAGE_START);
         return panel;
     }
 
@@ -117,24 +167,49 @@ public class CardLayoutPanel implements ActionListener{
 
     public static void setBlockUsername(String name){
         blockUsername = name;
-        contactLabel.setText(name);
-        contactPanel.repaint();
+        blockLabel.setText(name);
+        blockPanel.repaint();
         cardLayout.show(cards, "blockPanel");
     }
 
     public static void setMessageList(String s){
         chatId = s;
-        messageList.setListData(MessengerGui.getInstance().GetAllMessagesInChat(s).toArray());
+        if(MessengerGui.getInstance().IsInitSender(s)){
+            addToChat.setVisible(true);
+            removeFromChat.setVisible(true);
+        }else{
+            addToChat.setVisible(false);
+            removeFromChat.setVisible(false);
+        }
+        List<List<String>> tmp = MessengerGui.getInstance().GetAllMessagesInChat(s);
+//        System.out.println(tmp.size());
+        if(tmp == null){
+            //new message, so no data
+            return;
+        }
+        messageList.setListData(tmp.toArray());
         messageList.validate();
-//        messageList.ensureIndexIsVisible(messageList.getMaxSelectionIndex());
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
                 scrollBar.setValue(scrollBar.getMaximum());
             }
         });
-        scrollBar.setValue(scrollBar.getMaximum());
+//        scrollBar.setValue(scrollBar.getMaximum());
+//        List<List<String>> tmp = MessengerGui.getInstance().AllUsersInChat(s);
+//        int size = tmp.get(0).size();
+//        String[][] data = new String[1][size];
+//        for(int i = 0; i < size; i++){
+//            data[0][i] = tmp.get(i).get(0);
+//        }
+//        DefaultTableModel model = new DefaultTableModel(data, new Object[size]);
+//        table.setModel(model);
+//        model.fireTableDataChanged();
         cardLayout.show(cards, "messagePanel");
+    }
+
+    public static void clearMessageList(){
+        messageList.setListData(new Object[0]);
     }
 
     public JPanel getPanel() {
@@ -157,8 +232,27 @@ public class CardLayoutPanel implements ActionListener{
             System.out.println("New Message clicked");
             listener.newMessageEventOccurred(contactUsername);
             cardLayout.show(cards, "messagePanel");
+        }else if (e.getSource() == addToChat){
+            System.out.println("Add user to chat");
+            try {
+                listener.addUserToChatEventOccurred(getChatId());
+            } catch (Exception ex){
+                JOptionPane.showMessageDialog(cards, ex.getMessage(),
+                        "No selected chat", JOptionPane.WARNING_MESSAGE);
+            }
+            cardLayout.show(cards, "messagePanel");
+        }else if (e.getSource() == removeFromChat){
+            System.out.println("Remove user from chat");
+            try{
+                listener.removeUserFromChatEventOccurred(getChatId());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(cards, ex.getMessage(),
+                        "No selected chat", JOptionPane.WARNING_MESSAGE);
+                cardLayout.show(cards, "messagePanel");
+            }
         }
     }
+
     class MyCellRenderer extends DefaultListCellRenderer {
         public static final String HTML_1 = "<html><body style='width: ";
         public static final String HTML_2 = "px'>";
@@ -170,7 +264,7 @@ public class CardLayoutPanel implements ActionListener{
 
         private String htmlFormatterMessage(List<String> l){
             String html = HTML_1 + String.valueOf(width) + "\n" + HTML_2;
-            html += String.format("%s %s<br>%s\n", l.get(3), l.get(2), l.get(1));
+            html += String.format("<b>%s</b> %s<br>%s\n", l.get(3), l.get(2), l.get(1));
             html += "</html>";
             return html;
         }

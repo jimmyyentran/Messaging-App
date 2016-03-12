@@ -1,7 +1,8 @@
 import javax.swing.*;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 
 public class UIMessageList extends UIAbstractList implements ActionListener
 {
@@ -26,9 +27,25 @@ public class UIMessageList extends UIAbstractList implements ActionListener
     }
 
     protected String htmlFormatterGroup(List<List<String>> l){
-        String html = String.format("<html>%s", l.get(0).get(0).trim());
-        for(int i = 1; i < l.size(); ++i){
-            html += String.format("\n<br>%s", l.get(i).get(0).trim());
+        String html = "<html>";
+        int size = l.size();
+
+        if(size <= 2){
+            html += "Private<br>";
+        } else {
+            html += "Group<br>";
+        }
+
+        html += String.format("%s", l.get(0).get(0).trim());
+//        if(size > 3){
+//            for (int i = 1; i < 3; ++i) {
+//                html += String.format("\n& %s", l.get(i).get(0).trim());
+//            }
+//            html += "...";
+//        }else {
+            for (int i = 1; i < size; ++i) {
+                html += String.format("\n& %s", l.get(i).get(0).trim());
+//            }
         }
         html += "</html>";
         System.out.println(html);
@@ -37,7 +54,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
 
     protected String htmlFormatterMessage(List<String> l){
         String html = "<html>\n";
-        html += String.format("%s %s<br>%s\n", l.get(3), l.get(2), l.get(1));
+        html += String.format("<b>%s</b> %s<br>%s\n", l.get(3), l.get(2), l.get(1));
         html += "</html>";
         System.out.println(html);
         return html;
@@ -64,18 +81,32 @@ public class UIMessageList extends UIAbstractList implements ActionListener
 
         users = new JButton[list.size()];
 
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+//        c.anchor = GridBagConstraints.NORTHWEST;
+        c.gridx = 0;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+
         for(int i = 0; i < list.size(); i++){
             users[i] = makeUser(i);
+            users[i].setText(htmlFormatterGroup(esql.AllUsersInChat(list.get(i).get(0))));
+            c.gridy = i;
+//            gbl.setConstraints(users[i], c);
+            add(users[i], c);
+        }
+
+//        for(int i = 0; i < list.size(); i++){
+//            users[i] = makeUser(i);
             //problem with comparison so use ascii numbers
 //            if(103 == ((int)list.get(i).get(1).charAt(0))){
-                users[i].setText(htmlFormatterGroup(esql.AllUsersInChat(list.get(i).get(0))));
+//                users[i].setText(htmlFormatterGroup(esql.AllUsersInChat(list.get(i).get(0))));
 //            } else {
 //                users[i].setText(list.get(i).get(2).trim());
 //            }
-        }
+//        }
 
         for(JButton a : users){
-            add(a);
             buttonGroup.add(a);
         }
 

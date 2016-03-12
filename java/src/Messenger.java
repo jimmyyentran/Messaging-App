@@ -259,8 +259,11 @@ public class Messenger {
 //            RemoveFromContact(esql);
 //            ListContacts(esql);
 //            AddNewPrivateChat(esql);
-            AddNewMessageToChat(esql);
-            GetAllMessagesInChat(esql);
+//            AddNewMessageToChat(esql);
+//            GetAllMessagesInChat(esql);
+            GetMessages(esql);
+            DeleteChat(esql);
+            GetMessages(esql);
 
             // while(keepon) {
             // // These are sample SQL statements
@@ -417,6 +420,40 @@ public class Messenger {
             esql.executeUpdate(query2);
             String query3 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')", chat_id, target);
             esql.executeUpdate(query3);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }//end
+
+    public static boolean IsInitSender(Messenger esql, String author, String chat){
+        try{
+            String query = String.format("SELECT * FROM chat WHERE init_sender='%s' AND chat_id=%s", author, chat);
+            int userNum = esql.executeQuery(query);
+            if(userNum == 0){
+                return false;
+            } else {
+                return true;
+            }
+        }catch(Exception e){
+            System.err.println (e.getMessage ());
+            return false;
+        }
+    }//end
+
+    public static void DeleteChat(Messenger esql) {
+        try {
+            String login = "Judy";
+            String chatId = "5006";
+            if(IsInitSender(esql, login, chatId)) {
+                String query = String.format("DELETE FROM message WHERE chat_id=%s", chatId);
+                esql.executeUpdate(query);
+                query = String.format("DELETE FROM chat_list WHERE chat_id=%s", chatId);
+                esql.executeUpdate(query);
+                query = String.format("DELETE FROM chat WHERE chat_id=%s", chatId);
+                esql.executeUpdate(query);
+            } else {
+                throw new Exception("Not Init User");
+            }
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }

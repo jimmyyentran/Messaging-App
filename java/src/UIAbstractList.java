@@ -1,8 +1,8 @@
 import javax.swing.*;
-import java.awt.GridLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 
 public abstract class UIAbstractList extends JPanel
 {
@@ -14,9 +14,12 @@ public abstract class UIAbstractList extends JPanel
     protected MessengerGui esql;
     protected List<List<String>> list;
     protected ButtonGroup buttonGroup = new ButtonGroup();
+    protected GridBagLayout gbl = new GridBagLayout();
+    protected JTextField tf = new JTextField(5);
+    protected JButton btn = new JButton();
 
     UIAbstractList(){
-        setLayout(new GridLayout(0,1));
+        setLayout(gbl);
         esql = MessengerGui.getInstance();
     }
 
@@ -41,12 +44,36 @@ public abstract class UIAbstractList extends JPanel
 
         users = new JButton[list.size()];
 
+        GridBagConstraints c = new GridBagConstraints();
+//        c.fill = GridBagConstraints.BOTH;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.NORTH;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 1.0;
+//        c.weighty = 1.0;
+
+//        add(tf, c);
+//        c.gridx = 1;
+//
+//        btn.setPreferredSize(new Dimension(20,20));
+//        c.fill = GridBagConstraints.RELATIVE;
+//        add(btn, c);
+//
+//        c.fill = GridBagConstraints.HORIZONTAL;
+//        c.gridwidth = 2;
+//        c.gridx = 0;
+
         for(int i = 0; i < list.size(); i++){
             users[i] = makeUser(i);
+            c.gridy = i + 1;
+            add(users[i], c);
+//            gbl.setConstraints(users[i], c);
+//            add(users[i]);
         }
 
         for(JButton a : users){
-            add(a);
+//            add(a);
             buttonGroup.add(a);
         }
 
@@ -56,7 +83,7 @@ public abstract class UIAbstractList extends JPanel
 
     protected JButton makeUser(int index){
         JButton button = new JButton(htmlFormatter(index));
-        button.setPreferredSize(new Dimension(100,50));
+        button.setPreferredSize(new Dimension(120,80));
         // customizeButton(button);
         button.setActionCommand(Integer.toString(index));
         return button;
@@ -70,3 +97,4 @@ public abstract class UIAbstractList extends JPanel
         this.listener = listener;
     }
 }
+
