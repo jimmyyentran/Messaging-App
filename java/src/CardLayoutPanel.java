@@ -24,7 +24,7 @@ public class CardLayoutPanel implements ActionListener{
     private static JLabel topLabel;
     private static JTable table;
     private static JButton addToChat;
-    private static JButton removeFromChat;
+    private static JButton removeFromChat, refreshAll;
     private Action action = new AbstractAction() {
         public void actionPerformed(ActionEvent e){
             String text = textField.getText();
@@ -39,7 +39,8 @@ public class CardLayoutPanel implements ActionListener{
                 });
                 textField.setText("");
             }else {
-                throw new RuntimeException("Chat id not set");
+                JOptionPane.showMessageDialog(cards, "No chat is selected. Please select or create new chat.",
+                        "No selected chat", JOptionPane.WARNING_MESSAGE);
             }
         }
     };
@@ -109,22 +110,29 @@ public class CardLayoutPanel implements ActionListener{
         splitPane.setDividerLocation(200);
 
         //Message and status
-        topStatus = new JPanel(new FlowLayout());
+        FlowLayout fl = new FlowLayout();
+        topStatus = new JPanel(fl);
+        fl.setAlignment(FlowLayout.TRAILING);
         topStatus.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         ImageIcon add = new ImageIcon("images/add_16.gif");
         ImageIcon remove = new ImageIcon("images/block_16.gif");
+        ImageIcon refresh = new ImageIcon("images/refresh_16.png");
 
         addToChat = new JButton(add);
         removeFromChat = new JButton(remove);
+        refreshAll = new JButton(refresh);
 
         addToChat.setVisible(false);
         removeFromChat.setVisible(false);
+        refreshAll.setVisible(true);
 
         addToChat.addActionListener(this);
         removeFromChat.addActionListener(this);
+        refreshAll.addActionListener(this);
 
         topStatus.add(removeFromChat);
         topStatus.add(addToChat);
+        topStatus.add(refreshAll);
 //        String[] column = {"1", "2", "3"};
 //        String[][] data = {{"a", "a2", "a3"}};
 //        table = new JTable(data, column);
@@ -145,7 +153,7 @@ public class CardLayoutPanel implements ActionListener{
     private JPanel makeTextInputPanel(){
         JPanel panel = new JPanel();
 
-        JButton button = new JButton("Send");
+        JButton button = new JButton(new ImageIcon("images/mail_48.png"));
         button.addActionListener(action);
 
         textField = new JTextField();
@@ -249,6 +257,13 @@ public class CardLayoutPanel implements ActionListener{
                 JOptionPane.showMessageDialog(cards, ex.getMessage(),
                         "No selected chat", JOptionPane.WARNING_MESSAGE);
                 cardLayout.show(cards, "messagePanel");
+            }
+        }else if(e.getSource() == refreshAll){
+            listener.refreshAllEventOccurred();
+            try {
+                setMessageList(getChatId());
+            } catch (Exception e1) {
+                System.err.println(e1.getMessage());
             }
         }
     }

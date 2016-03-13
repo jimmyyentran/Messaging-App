@@ -14,7 +14,7 @@ public class UIBlockList extends UIAbstractList implements ActionListener
     }
 
     protected String htmlFormatter(int index){
-        return list.get(index).get(0).trim();
+        return "<html><b>" + list.get(index).get(0).trim() + "</b></html>";
     }
 
     protected void customizeButton(JButton button){}
@@ -24,6 +24,11 @@ public class UIBlockList extends UIAbstractList implements ActionListener
         for(JButton a: users){
             a.addActionListener(this);
         }
+    }
+
+    @Override
+    protected ImageIcon imageSelector(int index) {
+        return null;
     }
 
     public void actionPerformed(ActionEvent e){

@@ -52,13 +52,21 @@ public class Login implements ActionListener{
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == loginButton){
             listener.loginEventOccured(userText.getText(), String.valueOf(passwordText.getPassword()));
+            cleanFields();
         } else if (e.getSource() == registerButton){
             listener.registrationEventOccured();
+            cleanFields();
         } else if (e.getSource() == passwordText){
             listener.loginEventOccured(userText.getText(), String.valueOf(passwordText.getPassword()));
         } else if (e.getSource() == userText) {
             passwordText.requestFocusInWindow();
+            cleanFields();
         }
+    }
+
+    private void cleanFields(){
+        userText.setText("");
+        passwordText.setText("");
     }
 
     public JPanel getPanel(){

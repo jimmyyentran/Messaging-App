@@ -63,7 +63,7 @@ public class CardLayoutView {
                     List<List<String>> ret = esql.GetUser(authorizedUser);
                     System.out.println(ret);
                     esql.setUser(authorizedUser, ret.get(0).get(4), ret.get(0).get(5));
-                    ui.loadUser();
+                    ui.loadUser(authorizedUser);
                     cardLayout.show(cards, "ui");
                 }
                 else {

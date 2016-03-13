@@ -7,6 +7,9 @@ import java.util.List;
 public class UIMessageList extends UIAbstractList implements ActionListener
 {
     private Map<String, List<List<String>>> messageList = new HashMap<String, List<List<String>>>();
+    protected ImageIcon userIcon = new ImageIcon("images/user_32.png");
+    protected ImageIcon groupIcon = new ImageIcon("images/group_32.png");
+
     UIMessageList(){
         super();
     }
@@ -57,6 +60,26 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         return v;
     }
 
+    protected void setTextAndImage(List<List<String>> l, JButton button){
+        String html = "<html>";
+        int size = l.size();
+
+        if(size <= 1){
+            html += "<em>Private</em><br>";
+            button.setIcon(userIcon);
+        } else {
+            html += "<em>Group</em><br>";
+            button.setIcon(groupIcon);
+        }
+
+        html += String.format("<b>%s</b>", l.get(0).get(0).trim());
+        for (int i = 1; i < size; ++i) {
+            html += String.format("\n& <b>%s</b>", l.get(i).get(0).trim());
+        }
+        html += "</html>";
+        button.setText(html);
+    }
+
     @Override
     public void loadButtons(){
         removeAll();
@@ -79,7 +102,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
 
         for(int i = 0; i < list.size(); i++){
             users[i] = makeUser(i);
-            users[i].setText(htmlFormatterGroup(esql.AllUsersInChat(list.get(i).get(0))));
+            setTextAndImage(esql.AllUsersInChat(list.get(i).get(0)), users[i]);
             c.gridy = i;
 //            gbl.setConstraints(users[i], c);
             add(users[i], c);
@@ -110,6 +133,11 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         for(JButton a: users){
             a.addActionListener(this);
         }
+    }
+
+    @Override
+    protected ImageIcon imageSelector(int index) {
+        return null;
     }
 
 //    public static void clickFirstButton(){

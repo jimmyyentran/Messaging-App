@@ -7,4 +7,5 @@ public interface CardLayoutPanelListener {
     public void newMessageEventOccurred(String s);
     public void addUserToChatEventOccurred(String s);
     public void removeUserFromChatEventOccurred(String s);
+    public void refreshAllEventOccurred();
 }

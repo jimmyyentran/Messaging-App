@@ -14,6 +14,7 @@ public class UI extends JPanel implements ActionListener
     private JMenuBar menuBar;
     private JMenuItem logout, add, block, editStatus, deleteAccount, removeChat, addChat;
     private JToolBar toolbar;
+    private JLabel loginName, status;
 //    private JButton logout, add, block, editStatus, deleteAccount, removeChat;
 
     UI(){
@@ -36,16 +37,6 @@ public class UI extends JPanel implements ActionListener
         add(splitPane, BorderLayout.CENTER);
         // setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         // setLeftComponent(tabbedPane);
-    }
-
-    private void setUpToolbar(){
-        setUpButtons();
-        toolbar.add(logout);
-        toolbar.add(add);
-        toolbar.add(block);
-        toolbar.add(editStatus);
-        toolbar.add(deleteAccount);
-        toolbar.add(removeChat);
     }
 
     private void setUpMenubar(){
@@ -88,33 +79,21 @@ public class UI extends JPanel implements ActionListener
         menuBar.add(account);
         menuBar.add(contacts);
         menuBar.add(chats);
+
+        menuBar.add(Box.createHorizontalGlue());
+        loginName = new JLabel();
+        status = new JLabel();
+        loginName.setFont(new Font(loginName.getName(), Font.BOLD, 16));
+        menuBar.add(loginName);
+        menuBar.add(status);
+        loginName.setVisible(false);
+        status.setVisible(false);
     }
 
-    private void setUpButtons(){
-//        logout = new JButton("logout");
-//        logout.setActionCommand("logout");
-//        logout.addActionListener(this);
-//
-//        add = new JButton("add");
-//        add.setActionCommand("add");
-//        add.addActionListener(this);
-//
-//        block = new JButton("block");
-//        block.addActionListener(this);
-//
-//        editStatus = new JButton("editStaus");
-//        editStatus.addActionListener(this);
-//
-//        deleteAccount = new JButton("deleteAccount");
-//        deleteAccount.addActionListener(this);
-//
-//        removeChat = new JButton("removeChat");
-//        removeChat.setActionCommand("removeChat");
-//        removeChat.addActionListener(this);
-    }
-
-    public void loadUser(){
+    public void loadUser(String s){
         tabbedPane.loadUser();
+        loginName.setText(s + " ");
+        loginName.setVisible(true);
     }
 
     private CardLayoutPanelListener cardLayoutPanelListener = new CardLayoutPanelListener() {
@@ -217,6 +196,11 @@ public class UI extends JPanel implements ActionListener
             }
         }
 
+        @Override
+        public void refreshAllEventOccurred() {
+            tabbedPane.loadUser();
+
+        }
     };
 
     public void actionPerformed(ActionEvent e){
@@ -224,6 +208,7 @@ public class UI extends JPanel implements ActionListener
         if("logout".equals(cmd)){
             listener.logoutEventOccured();
             CardLayoutPanel.clearMessageList();
+            loginName.setVisible(false);
         }else if ("add".equals(cmd)){
             String s = (String)JOptionPane.showInputDialog(
                     this,

@@ -5,6 +5,8 @@ import java.util.*;
 
 public class UIContactList extends UIAbstractList implements ActionListener
 {
+    protected ImageIcon userIcon = new ImageIcon("images/user_32.png");
+
     UIContactList(){
         super();
     }
@@ -14,7 +16,7 @@ public class UIContactList extends UIAbstractList implements ActionListener
     }
 
     protected String htmlFormatter(int index){
-        return String.format("<html>%s<br />%s</html>", list.get(index).get(0).trim(), list.get(index).get(1).trim());
+        return String.format("<html><b>%s</b><br />%s</html>", list.get(index).get(0).trim(), list.get(index).get(1).trim());
     }
 
     protected void customizeButton(JButton button){
@@ -24,6 +26,11 @@ public class UIContactList extends UIAbstractList implements ActionListener
         for(JButton a: users){
             a.addActionListener(this);
         }
+    }
+
+    @Override
+    protected ImageIcon imageSelector(int index) {
+        return userIcon;
     }
 
     public void actionPerformed(ActionEvent e){

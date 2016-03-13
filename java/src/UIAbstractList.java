@@ -17,6 +17,9 @@ public abstract class UIAbstractList extends JPanel
     protected GridBagLayout gbl = new GridBagLayout();
     protected JTextField tf = new JTextField(5);
     protected JButton btn = new JButton();
+    protected ImageIcon userIcon = new ImageIcon("images/user_32.png");
+    protected ImageIcon groupIcon = new ImageIcon("images/group_32.png");
+
 
     UIAbstractList(){
         setLayout(gbl);
@@ -27,6 +30,7 @@ public abstract class UIAbstractList extends JPanel
     abstract protected String htmlFormatter(int index);
     abstract protected void customizeButton(JButton button);
     abstract protected void setAllActionListeners();
+    abstract protected ImageIcon imageSelector(int index);
 
     private void convertListToUsr(){
 
@@ -81,7 +85,11 @@ public abstract class UIAbstractList extends JPanel
     }
 
     protected JButton makeUser(int index){
-        JButton button = new JButton(htmlFormatter(index));
+        JButton button = new JButton(htmlFormatter(index), imageSelector(index));
+//        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.RIGHT);
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+//        button.setText(htmlFormatter(index));
         button.setPreferredSize(new Dimension(120,80));
         // customizeButton(button);
         button.setActionCommand(Integer.toString(index));
