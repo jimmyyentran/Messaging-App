@@ -264,7 +264,7 @@ public class CardLayoutPanel implements ActionListener{
 
         private String htmlFormatterMessage(List<String> l){
             String html = HTML_1 + String.valueOf(width) + "\n" + HTML_2;
-            html += String.format("<b>%s</b> %s<br>%s\n", l.get(3), l.get(2), l.get(1));
+            html += String.format("<b>%s</b> <small><em>%s:</small></em><br>%s\n", l.get(3), l.get(2), l.get(1));
             html += "</html>";
             return html;
         }

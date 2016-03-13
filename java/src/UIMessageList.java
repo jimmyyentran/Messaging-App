@@ -27,21 +27,14 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         int size = l.size();
 
         if(size <= 1){
-            html += "Private<br>";
+            html += "<em>Private</em><br>";
         } else {
-            html += "Group<br>";
+            html += "<em>Group</em><br>";
         }
 
-        html += String.format("%s", l.get(0).get(0).trim());
-//        if(size > 3){
-//            for (int i = 1; i < 3; ++i) {
-//                html += String.format("\n& %s", l.get(i).get(0).trim());
-//            }
-//            html += "...";
-//        }else {
+        html += String.format("<b>%s</b>", l.get(0).get(0).trim());
             for (int i = 1; i < size; ++i) {
-                html += String.format("\n& %s", l.get(i).get(0).trim());
-//            }
+                html += String.format("\n& <b>%s</b>", l.get(i).get(0).trim());
         }
         html += "</html>";
 //        System.out.println(html);

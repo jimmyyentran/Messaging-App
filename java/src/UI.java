@@ -141,6 +141,7 @@ public class UI extends JPanel implements ActionListener
                     chat_id = esql.AddNewPrivateChat(s);
                 } catch (Exception e){
                     JOptionPane.showMessageDialog(UI.this, e.getMessage());
+                    return;
                 }
 //                CardLayoutPanel.setChatId(s);
                 CardLayoutPanel.setMessageList(Integer.toString(chat_id));
@@ -222,6 +223,7 @@ public class UI extends JPanel implements ActionListener
         String cmd = e.getActionCommand();
         if("logout".equals(cmd)){
             listener.logoutEventOccured();
+            CardLayoutPanel.clearMessageList();
         }else if ("add".equals(cmd)){
             String s = (String)JOptionPane.showInputDialog(
                     this,
@@ -233,11 +235,11 @@ public class UI extends JPanel implements ActionListener
                 if(!esql.GetUser(s).isEmpty()){
                     try{
                         esql.AddToContact(s);
-                        tabbedPane.loadUser();
+                        tabbedPane.reloadContacts();
                         tabbedPane.repaint();
                     }catch(Exception ev){
-                        JOptionPane.showMessageDialog(this, ev.getMessage());
-//                        JOptionPane.showMessageDialog(this, s + " is already a friend");
+                        System.err.println(ev.getMessage());
+                        JOptionPane.showMessageDialog(this, s + " is already a friend");
                     }
                 }else {
                     JOptionPane.showMessageDialog(this, "No user with the name " + s);
@@ -255,7 +257,7 @@ public class UI extends JPanel implements ActionListener
                     if(!s.equals(esql.getUser())) {
                         try {
                             esql.AddToBlock(s);
-                            tabbedPane.loadUser();
+                            tabbedPane.reloadBlocked();
                             tabbedPane.repaint();
                         } catch (Exception ev) {
                             System.err.println(ev.getMessage());

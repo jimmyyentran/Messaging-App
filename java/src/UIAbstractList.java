@@ -33,7 +33,6 @@ public abstract class UIAbstractList extends JPanel
     };
 
     public void loadButtons(){
-        System.out.println("DEBUG@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         removeAll();
         setList();
 

@@ -25,6 +25,7 @@ public class Login implements ActionListener{
 
         userText = new JTextField(20);
         userText.setBounds(100, 10, 160, 25);
+        userText.addActionListener(this);
         panel.add(userText);
 
         JLabel passwordLabel = new JLabel("Password");
@@ -33,6 +34,7 @@ public class Login implements ActionListener{
 
         passwordText = new JPasswordField(20);
         passwordText.setBounds(100, 40, 160, 25);
+        passwordText.addActionListener(this);
         panel.add(passwordText);
 
         loginButton = new JButton("login");
@@ -52,6 +54,10 @@ public class Login implements ActionListener{
             listener.loginEventOccured(userText.getText(), String.valueOf(passwordText.getPassword()));
         } else if (e.getSource() == registerButton){
             listener.registrationEventOccured();
+        } else if (e.getSource() == passwordText){
+            listener.loginEventOccured(userText.getText(), String.valueOf(passwordText.getPassword()));
+        } else if (e.getSource() == userText) {
+            passwordText.requestFocusInWindow();
         }
     }
 
