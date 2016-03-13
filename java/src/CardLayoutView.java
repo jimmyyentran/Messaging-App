@@ -92,6 +92,10 @@ public class CardLayoutView {
             }
             public void blockEventOccured(){}
             public void editStatusEventOccured(){}
-            });
+
+            public void deleteAccountEventOccurred() {
+                cardLayout.show(cards, "login");
+            }
+        });
     }
 }

@@ -284,7 +284,7 @@ public class MessengerGui {
                     "VALUES ('%s','%s','%s', '%s',%s,%s)\n", phone, login, password, "", block_id, contact_id);
 
             executeUpdate(query);
-//            System.out.println("User successfully created!");
+            setUser(login, String.valueOf(block_id), String.valueOf(contact_id));
         } catch (Exception e) {
             throw new Exception("That username already exists!");
         }
@@ -369,11 +369,15 @@ public class MessengerGui {
 
     public List<List<String>> ListMessages() {
         try {
-            String query = String.format(
-                    "SELECT *\n" +
-                            "FROM chat WHERE chat_id IN (\n" +
-                            "SELECT chat_id\n" +
-                            "FROM chat_list WHERE member = '%s')\n", user);
+//            String query = String.format(
+//                    "SELECT *\n" +
+//                            "FROM chat WHERE chat_id IN (\n" +
+//                            "SELECT chat_id\n" +
+//                            "FROM chat_list WHERE member = '%s')\n", user);
+            String query = String.format("SELECT L.chat_id, MAX(M.msg_timestamp) AS Received\n" +
+                    "FROM chat_list L, message M\n" +
+                    "WHERE L.member = '%s' AND M.chat_id=L.chat_id\n" +
+                    "GROUP BY L.chat_id ORDER BY MAX(M.msg_timestamp) DESC", user);
 //            System.out.println(query);
 //            int userNum = executeQueryAndPrintResult(query);
 //            System.out.println();
@@ -397,14 +401,14 @@ public class MessengerGui {
             // System.out.println("Number Outputs: " + userNum);
             // System.out.println();
             List<List<String>> ret = executeQueryAndReturnResult(query);
-            for(Iterator<List<String>> iter = ret.listIterator(); iter.hasNext();){
-                if(iter.next().get(0).equals(user)){
+            for (Iterator<List<String>> iter = ret.listIterator(); iter.hasNext(); ) {
+                if (iter.next().get(0).equals(user)) {
                     iter.remove();
                 }
             }
-            for(List<String> l : ret){
-                System.out.println(l.get(0));
-            }
+//            for (List<String> l : ret) {
+//                System.out.println(l.get(0));
+//            }
 //            return executeQueryAndReturnResult(query);
             return ret;
         } catch (Exception e) {
@@ -454,20 +458,20 @@ public class MessengerGui {
         }
     }//end
 
-    public void AddNewPrivateChat(String target) {
-        try {
-            //check if
+    public int AddNewPrivateChat(String target) throws Exception {
+        //check if
 
-            String query = String.format("INSERT INTO chat(chat_type, init_sender) VALUES ('private', '%s')\n", getUser());
-            executeUpdate(query);
-            int chat_id = getCurrSeqVal("chat_chat_id_seq");
-            String query2 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')\n", chat_id, getUser());
-            executeUpdate(query2);
-            String query3 = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')\n", chat_id, target);
-            executeUpdate(query3);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+        String query = String.format("INSERT INTO chat(chat_type, init_sender) VALUES ('private', '%s')\n", getUser());
+        executeUpdate(query);
+        int chat_id = getCurrSeqVal("chat_chat_id_seq");
+        query = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')\n", chat_id, getUser());
+        executeUpdate(query);
+        query = String.format("INSERT INTO chat_list(chat_id, member) VALUES (%d, '%s')\n", chat_id, target);
+        executeUpdate(query);
+        query = String.format("INSERT INTO message(msg_text, msg_timestamp, sender_login, chat_id)\n" +
+                "VALUES ('%s', (select LOCALTIMESTAMP(2)), '%s', '%s')", "", user, chat_id);
+        executeUpdate(query);
+        return chat_id;
     }//end
 
     public String GetPrivateChat(String target) {
@@ -522,7 +526,7 @@ public class MessengerGui {
         }
     }//end
 
-    public void AddUserToChat(String chatId, String member) throws Exception, SQLException{
+    public void AddUserToChat(String chatId, String member) throws Exception, SQLException {
         if (IsInitSender(chatId)) {
             String query = String.format("INSERT INTO chat_list(chat_id, member)" +
                     "VALUES (%s, '%s')", chatId, member);
@@ -537,7 +541,7 @@ public class MessengerGui {
         }
     }//end
 
-    public void RemoveUserFromChat(String chatId, String member) throws Exception, SQLException{
+    public void RemoveUserFromChat(String chatId, String member) throws Exception, SQLException {
         if (IsInitSender(chatId)) {
             String query = String.format("DELETE FROM chat_list WHERE member='%s' AND chat_id='%s'", member, chatId);
             executeUpdate(query);
@@ -546,7 +550,7 @@ public class MessengerGui {
             if (numReturn == 2) {
                 query = String.format("UPDATE chat SET chat_type='private' WHERE chat_id=%s", chatId);
                 executeUpdate(query);
-            } else if (numReturn == 1){
+            } else if (numReturn == 1) {
                 DeleteChat(chatId);
             }
         } else {
@@ -575,11 +579,44 @@ public class MessengerGui {
 //            System.out.println();
 //            System.out.println("Number Outputs: " + userNum);
             List<List<String>> ret = executeQueryAndReturnResult(query);
+            for (Iterator<List<String>> iter = ret.listIterator(); iter.hasNext(); ) {
+                if (iter.next().get(1).equals("")) {
+                    iter.remove();
+                }
+            }
             return ret;
         } catch (Exception e) {
             System.err.println(e.getMessage());
             return null;
         }
     }//end
+
+    public void DeleteUser() throws Exception{
+        try {
+            String query = String.format("SELECT * FROM chat WHERE init_sender='%s'",user);
+            int chats = executeQuery(query);
+            System.out.println(chats);
+            if(chats > 0){
+                throw new Exception("There are authored chats. Please remove them.");
+            }
+            query = String.format("DELETE FROM user_list_contains WHERE list_id=%s", block_list);
+            executeUpdate(query);
+            query = String.format("DELETE FROM user_list_contains WHERE list_id=%s", contact_list);
+            executeUpdate(query);
+            query = String.format("DELETE FROM user_list_contains WHERE list_member='%s'", user);
+            executeUpdate(query);
+            query = String.format("DELETE FROM usr WHERE login='%s'", user);
+            executeUpdate(query);
+            query = String.format("DELETE FROM user_list WHERE list_id=%s", block_list);
+            executeUpdate(query);
+            query = String.format("DELETE FROM user_list WHERE list_id=%s", contact_list);
+            executeUpdate(query);
+            user = block_list = contact_list = null;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw e;
+        }
+    }//end
+
 
 }//end MessengerGui

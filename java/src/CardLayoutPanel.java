@@ -45,8 +45,8 @@ public class CardLayoutPanel implements ActionListener{
     };
 
     public CardLayoutPanel() {
-        removeC = new JButton("Remove");
-        removeB = new JButton("Remove");
+        removeC = new JButton("Remove From Contacts");
+        removeB = new JButton("Remove From Blocked");
         newMessage = new JButton("New Message");
 
         removeC.addActionListener(this);

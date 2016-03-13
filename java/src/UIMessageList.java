@@ -13,12 +13,8 @@ public class UIMessageList extends UIAbstractList implements ActionListener
 
     protected void setList(){
         list = esql.ListMessages();
-        System.out.println("Test");
         for(List<String> l : list){
-            System.out.println("Test2");
-            System.out.println(l.get(0));
             messageList.put(l.get(0), esql.GetAllMessagesInChat(l.get(0)));
-            System.out.println("End");
         }
     }
 
@@ -30,7 +26,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         String html = "<html>";
         int size = l.size();
 
-        if(size <= 2){
+        if(size <= 1){
             html += "Private<br>";
         } else {
             html += "Group<br>";
@@ -48,7 +44,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
 //            }
         }
         html += "</html>";
-        System.out.println(html);
+//        System.out.println(html);
         return html;
     }
 
@@ -56,7 +52,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         String html = "<html>\n";
         html += String.format("<b>%s</b> %s<br>%s\n", l.get(3), l.get(2), l.get(1));
         html += "</html>";
-        System.out.println(html);
+//        System.out.println(html);
         return html;
     }
 
@@ -128,6 +124,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
 
     public void actionPerformed(ActionEvent e){
         String cmd = e.getActionCommand();
+        ((JButton)e.getSource()).setBackground(Color.cyan);
         String chatId = list.get(Integer.parseInt(cmd)).get(0);
 //        CardLayoutPanel.setList(htmlFormatterMessageList(messageList.get(chatId)), chatId);
 //        CardLayoutPanel.setMessageList(messageList.get(chatId), chatId);

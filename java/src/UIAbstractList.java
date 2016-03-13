@@ -33,6 +33,7 @@ public abstract class UIAbstractList extends JPanel
     };
 
     public void loadButtons(){
+        System.out.println("DEBUG@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         removeAll();
         setList();
 
@@ -78,7 +79,6 @@ public abstract class UIAbstractList extends JPanel
         }
 
         setAllActionListeners();
-
     }
 
     protected JButton makeUser(int index){

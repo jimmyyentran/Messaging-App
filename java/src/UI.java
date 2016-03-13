@@ -11,13 +11,16 @@ public class UI extends JPanel implements ActionListener
     private MessengerGui esql;
     private JSplitPane splitPane;
     private JPanel messageBoard;
+    private JMenuBar menuBar;
+    private JMenuItem logout, add, block, editStatus, deleteAccount, removeChat, addChat;
     private JToolBar toolbar;
-    private JButton logout, add, block, editStatus, deleteAccount, removeChat;
+//    private JButton logout, add, block, editStatus, deleteAccount, removeChat;
 
     UI(){
         super(new BorderLayout());
 
         toolbar = new JToolBar();
+        menuBar = new JMenuBar();
         CardLayoutPanel cardLayoutPanel = new CardLayoutPanel();
         cardLayoutPanel.setListener(cardLayoutPanelListener);
         messageBoard = cardLayoutPanel.getPanel();
@@ -25,10 +28,11 @@ public class UI extends JPanel implements ActionListener
         splitPane =  new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tabbedPane, messageBoard);
         esql = MessengerGui.getInstance();
 
-        setUpToolbar();
+//        setUpToolbar();
+        setUpMenubar();
         splitPane.setDividerLocation(220);
 
-        add(toolbar, BorderLayout.PAGE_START);
+        add(menuBar, BorderLayout.PAGE_START);
         add(splitPane, BorderLayout.CENTER);
         // setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         // setLeftComponent(tabbedPane);
@@ -44,27 +48,69 @@ public class UI extends JPanel implements ActionListener
         toolbar.add(removeChat);
     }
 
-    private void setUpButtons(){
-        logout = new JButton("logout");
+    private void setUpMenubar(){
+        JMenu account = new JMenu("Account");
+        logout = new JMenuItem("Logout");
         logout.setActionCommand("logout");
         logout.addActionListener(this);
+        account.add(logout);
 
-        add = new JButton("add");
+        deleteAccount = new JMenuItem("Delete Account");
+        deleteAccount.setActionCommand("deleteAccount");
+        deleteAccount.addActionListener(this);
+        account.add(deleteAccount);
+
+        JMenu contacts = new JMenu("Contacts");
+        add = new JMenuItem("Add User");
         add.setActionCommand("add");
         add.addActionListener(this);
+        contacts.add(add);
 
-        block = new JButton("block");
+        block = new JMenuItem("Block User");
+        block.setActionCommand("block");
         block.addActionListener(this);
+        contacts.add(block);
 
-        editStatus = new JButton("editStaus");
-        editStatus.addActionListener(this);
+//        editStatus = new JMenuItem("editStaus");
+//        editStatus.addActionListener(this);
 
-        deleteAccount = new JButton("deleteAccount");
-        deleteAccount.addActionListener(this);
+        JMenu chats =  new JMenu("Chats");
+        addChat = new JMenuItem("Add Chat");
+        addChat.setActionCommand("addChat");
+        addChat.addActionListener(this);
+        chats.add(addChat);
 
-        removeChat = new JButton("removeChat");
+        removeChat = new JMenuItem("Remove Chat");
         removeChat.setActionCommand("removeChat");
         removeChat.addActionListener(this);
+        chats.add(removeChat);
+
+        menuBar.add(account);
+        menuBar.add(contacts);
+        menuBar.add(chats);
+    }
+
+    private void setUpButtons(){
+//        logout = new JButton("logout");
+//        logout.setActionCommand("logout");
+//        logout.addActionListener(this);
+//
+//        add = new JButton("add");
+//        add.setActionCommand("add");
+//        add.addActionListener(this);
+//
+//        block = new JButton("block");
+//        block.addActionListener(this);
+//
+//        editStatus = new JButton("editStaus");
+//        editStatus.addActionListener(this);
+//
+//        deleteAccount = new JButton("deleteAccount");
+//        deleteAccount.addActionListener(this);
+//
+//        removeChat = new JButton("removeChat");
+//        removeChat.setActionCommand("removeChat");
+//        removeChat.addActionListener(this);
     }
 
     public void loadUser(){
@@ -90,10 +136,16 @@ public class UI extends JPanel implements ActionListener
             String str = esql.GetPrivateChat(s);
             if(str == null){
                 //no private messages, so add
-                esql.AddNewPrivateChat(s);
+                int chat_id = 0;
+                try {
+                    chat_id = esql.AddNewPrivateChat(s);
+                } catch (Exception e){
+                    JOptionPane.showMessageDialog(UI.this, e.getMessage());
+                }
+//                CardLayoutPanel.setChatId(s);
+                CardLayoutPanel.setMessageList(Integer.toString(chat_id));
                 tabbedPane.reloadMessages();
                 tabbedPane.repaint();
-                CardLayoutPanel.setMessageList(s);
             }else {
                 CardLayoutPanel.setMessageList(str);
             }
@@ -121,7 +173,7 @@ public class UI extends JPanel implements ActionListener
                                 JOptionPane.showMessageDialog(UI.this, ev.getMessage());
                             }
                         } else {
-                            JOptionPane.showMessageDialog(UI.this, "No user with the name " + s);
+                            JOptionPane.showMessageDialog(UI.this, "No user with the name " + str);
                         }
                 }
             }else {
@@ -156,7 +208,7 @@ public class UI extends JPanel implements ActionListener
                             JOptionPane.showMessageDialog(UI.this, ev.getMessage());
                         }
                     } else {
-                        JOptionPane.showMessageDialog(UI.this, "No user with the name " + s);
+                        JOptionPane.showMessageDialog(UI.this, "No user with the name " + str);
                     }
                 }
             }else {
@@ -200,13 +252,17 @@ public class UI extends JPanel implements ActionListener
                     );
             if((s != null) && (s.length() > 0)){
                 if(!esql.GetUser(s).isEmpty()){
-                    try{
-                        esql.AddToBlock(s);
-                        tabbedPane.loadUser();
-                        tabbedPane.repaint();
-                    }catch(Exception ev){
-                        System.err.println (ev.getMessage ());
-                        JOptionPane.showMessageDialog(this, s + " is already blocked");
+                    if(!s.equals(esql.getUser())) {
+                        try {
+                            esql.AddToBlock(s);
+                            tabbedPane.loadUser();
+                            tabbedPane.repaint();
+                        } catch (Exception ev) {
+                            System.err.println(ev.getMessage());
+                            JOptionPane.showMessageDialog(this, s + " is already blocked");
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(this, "You cannot block yourself");
                     }
                 }else {
                     JOptionPane.showMessageDialog(this, "No user with the name " + s);
@@ -222,6 +278,45 @@ public class UI extends JPanel implements ActionListener
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(this, e1.getMessage());
             }
+        }else if ("deleteAccount".equals(cmd)){
+            try{
+                MessengerGui.getInstance().DeleteUser();
+                listener.deleteAccountEventOccurred();
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, e1.getMessage());
+            }
+        }else if ("addChat".equals(cmd)){
+            String s = (String)JOptionPane.showInputDialog(
+                    this,
+                    "Enter in username to start new chat",
+                    "Start new chat",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+            if((s != null) && (s.length() > 0)){
+                if(!esql.GetUser(s).isEmpty()){
+                    String str = esql.GetPrivateChat(s);
+                    if(str == null){
+                        //no private messages, so add
+                        int chat_id = 0;
+                        try {
+                            chat_id = esql.AddNewPrivateChat(s);
+                        } catch (Exception ex){
+                            JOptionPane.showMessageDialog(UI.this, ex.getMessage());
+                            return;
+                        }
+//                CardLayoutPanel.setChatId(s);
+                        CardLayoutPanel.setMessageList(Integer.toString(chat_id));
+                        tabbedPane.reloadMessages();
+                        tabbedPane.repaint();
+                    }else {
+                        CardLayoutPanel.setMessageList(str);
+                    }
+
+                }else {
+                    JOptionPane.showMessageDialog(this, "No user with the name " + s);
+                }
+            }
+
         }
     }
 

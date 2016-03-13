@@ -3,4 +3,5 @@ public interface UIListener {
     public void addEventOccured();
     public void blockEventOccured();
     public void editStatusEventOccured();
+    public void deleteAccountEventOccurred();
 }
