@@ -22,9 +22,13 @@ public class CardLayoutView {
         esql = MessengerGui.getInstance();
 
         cards = new JPanel(cardLayout);
+
         cards.add(login.getPanel(), "login");
         cards.add(registration, "registration");
         cards.add(ui, "ui");
+
+        login.getPanel().repaint();
+        registration.repaint();
 
         setUpRegistration();
         setUpLogin();
@@ -40,9 +44,12 @@ public class CardLayoutView {
             public void submitEventOccured(String login, String password, String phone){
                 try{
                     esql.CreateUser(login, password, phone);
-                    List<List<String>> ret = esql.GetUser(login);
-                    esql.setUser(authorizedUser, ret.get(0).get(4), ret.get(0).get(5));
-                    cardLayout.show(cards, "ui");
+//                    List<List<String>> ret = esql.GetUser(login);
+//                    esql.setUser(authorizedUser, ret.get(0).get(4), ret.get(0).get(5));
+//                    ui.loadUser(authorizedUser);
+                    JOptionPane.showMessageDialog(cards,"Congratulations, Account Created!");
+                    registration.clearFields();
+                    cardLayout.show(cards, "login");
                 }
                 catch(Exception e){
                     JOptionPane.showMessageDialog(cards, e.getMessage());

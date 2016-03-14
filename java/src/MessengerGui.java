@@ -286,6 +286,7 @@ public class MessengerGui {
             executeUpdate(query);
             setUser(login, String.valueOf(block_id), String.valueOf(contact_id));
         } catch (Exception e) {
+            System.err.println(e.getMessage());
             throw new Exception("That username already exists!");
         }
     }//end
@@ -308,6 +309,7 @@ public class MessengerGui {
             return null;
         }
     }//end
+
 
     public void AddToContact(String addedContact) throws Exception {
         String query = String.format(
@@ -366,6 +368,17 @@ public class MessengerGui {
             return null;
         }
     }//end
+
+    public boolean isBlocked(String userToBeAdded){
+        List<List<String>> tmp = ListBlocked();
+        for(List<String> tmpL : tmp){
+            if(tmpL.get(0).equals(userToBeAdded)){
+                System.out.println("Blocked: " + userToBeAdded);
+                return true;
+            }
+        }
+        return false;
+    }
 
     public List<List<String>> ListMessages() {
         try {
@@ -481,6 +494,7 @@ public class MessengerGui {
                     "(SELECT chat_id FROM chat_list WHERE member='%s')\n" +
                     "AND member='%s') AS b, chat a\n" +
                     "WHERE a.chat_id=b.chat_id AND a.chat_type='private'", user, target);
+            executeQueryAndPrintResult(query);
             List<List<String>> list = executeQueryAndReturnResult(query);
             if (list.size() == 1) {
                 return list.get(0).get(0);
@@ -532,7 +546,9 @@ public class MessengerGui {
                     "VALUES (%s, '%s')", chatId, member);
             executeUpdate(query);
             query = String.format("SELECT * FROM chat_list WHERE chat_id=%s", chatId);
-            if (executeQuery(query) == 3) {
+            System.out.println("TEST WHEN ADD USER TO CHAT:" + executeQueryAndPrintResult(query));
+            System.out.println("ChatId is: " + chatId);
+            if (executeQueryAndPrintResult(query) >= 3) {
                 query = String.format("UPDATE chat SET chat_type='group' WHERE chat_id=%s", chatId);
                 executeUpdate(query);
             }
@@ -599,17 +615,32 @@ public class MessengerGui {
             if(chats > 0){
                 throw new Exception("There are authored chats. Please remove them.");
             }
-            query = String.format("DELETE FROM user_list_contains WHERE list_id=%s", block_list);
+//            deleteQuery = String.format("DELETE  FROM chat_list WHERE member='%s'" , currentLogin);
+//            executeUpdate(deleteQuery);
+//
+//            deleteQuery = String.format("DELETE  FROM message WHERE sender_login='%s'" , currentLogin);
+//            executeUpdate(deleteQuery);
+//
+//            deleteQuery = String.format("DELETE  FROM usr WHERE login='%s'", currentLogin);
+//            executeUpdate(deleteQuery);
+//
+//            deleteQuery = String.format("DELETE  FROM user_list_contains WHERE list_id=%d OR list_id = %d" , contact_id, block_id);
+//            executeUpdate(deleteQuery);
+//
+//            deleteQuery = String.format("DELETE  FROM user_list WHERE list_id=%d OR list_id = %d" , contact_id, block_id);
+//            executeUpdate(deleteQuery);
+
+            query = String.format("DELETE FROM chat_list WHERE member='%s'", user);
             executeUpdate(query);
-            query = String.format("DELETE FROM user_list_contains WHERE list_id=%s", contact_list);
-            executeUpdate(query);
-            query = String.format("DELETE FROM user_list_contains WHERE list_member='%s'", user);
+            query = String.format("DELETE FROM message WHERE sender_login='%s'", user);
             executeUpdate(query);
             query = String.format("DELETE FROM usr WHERE login='%s'", user);
             executeUpdate(query);
-            query = String.format("DELETE FROM user_list WHERE list_id=%s", block_list);
+            query = String.format("DELETE FROM user_list_contains WHERE list_id=%s OR list_id=%s", block_list, contact_list);
             executeUpdate(query);
-            query = String.format("DELETE FROM user_list WHERE list_id=%s", contact_list);
+            query = String.format("DELETE FROM user_list_contains WHERE list_member='%s'", user);
+            executeUpdate(query);
+            query = String.format("DELETE FROM user_list WHERE list_id=%s OR list_id=%s", block_list, contact_list);
             executeUpdate(query);
             user = block_list = contact_list = null;
         } catch (Exception e) {

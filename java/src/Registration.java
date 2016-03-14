@@ -10,6 +10,7 @@ public class Registration extends JPanel implements ActionListener
     JButton btn1, btn2, btn3;
     JPasswordField p1, p2;
     private RegistrationListener listener;
+//    private Image img;
 
     Registration()
     {
@@ -72,6 +73,13 @@ public class Registration extends JPanel implements ActionListener
         add(btn3);
     }
 
+    public void clearFields(){
+        tf1.setText("");
+        p1.setText("");
+        p2.setText("");
+        tf7.setText("");
+    }
+
     public void actionPerformed(ActionEvent e) 
     {
         if (e.getSource() == btn1)
@@ -117,5 +125,12 @@ public class Registration extends JPanel implements ActionListener
 
     public void setRegistrationListener(RegistrationListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void paintComponent(Graphics g){
+//        System.out.println("Draw");
+//        super.paintComponent(g);
+        g.drawImage(Mainframe.img, 0, 0, getWidth(), getHeight(), this);
     }
 }

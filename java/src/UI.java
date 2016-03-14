@@ -4,8 +4,7 @@ import java.awt.event.*;
 import java.sql.*;
 import java.util.List;
 
-public class UI extends JPanel implements ActionListener 
-{
+public class UI extends JPanel implements ActionListener {
     private UIListener listener;
     private UITabbedPane tabbedPane;
     private MessengerGui esql;
@@ -17,7 +16,7 @@ public class UI extends JPanel implements ActionListener
     private JLabel loginName, status;
 //    private JButton logout, add, block, editStatus, deleteAccount, removeChat;
 
-    UI(){
+    UI() {
         super(new BorderLayout());
 
         toolbar = new JToolBar();
@@ -25,13 +24,16 @@ public class UI extends JPanel implements ActionListener
         CardLayoutPanel cardLayoutPanel = new CardLayoutPanel();
         cardLayoutPanel.setListener(cardLayoutPanelListener);
         messageBoard = cardLayoutPanel.getPanel();
+        messageBoard.setOpaque(false);
         tabbedPane = new UITabbedPane();
-        splitPane =  new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tabbedPane, messageBoard);
+        tabbedPane.setOpaque(false);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tabbedPane, messageBoard);
         esql = MessengerGui.getInstance();
 
 //        setUpToolbar();
         setUpMenubar();
         splitPane.setDividerLocation(220);
+        splitPane.setOpaque(false);
 
         add(menuBar, BorderLayout.PAGE_START);
         add(splitPane, BorderLayout.CENTER);
@@ -39,7 +41,7 @@ public class UI extends JPanel implements ActionListener
         // setLeftComponent(tabbedPane);
     }
 
-    private void setUpMenubar(){
+    private void setUpMenubar() {
         JMenu account = new JMenu("Account");
         logout = new JMenuItem("Logout");
         logout.setActionCommand("logout");
@@ -65,7 +67,7 @@ public class UI extends JPanel implements ActionListener
 //        editStatus = new JMenuItem("editStaus");
 //        editStatus.addActionListener(this);
 
-        JMenu chats =  new JMenu("Chats");
+        JMenu chats = new JMenu("Chats");
         addChat = new JMenuItem("Add Chat");
         addChat.setActionCommand("addChat");
         addChat.addActionListener(this);
@@ -90,7 +92,7 @@ public class UI extends JPanel implements ActionListener
         status.setVisible(false);
     }
 
-    public void loadUser(String s){
+    public void loadUser(String s) {
         tabbedPane.loadUser();
         loginName.setText(s + " ");
         loginName.setVisible(true);
@@ -103,37 +105,47 @@ public class UI extends JPanel implements ActionListener
             tabbedPane.reloadContacts();
             tabbedPane.repaint();
         }
+
         @Override
         public void removeBlockEventOccurred(String s) {
             esql.RemoveFromBlocked(s);
             tabbedPane.reloadBlocked();
+            tabbedPane.reloadMessages();
             tabbedPane.repaint();
         }
 
         @Override
         public void newMessageEventOccurred(String s) {
-            String str = esql.GetPrivateChat(s);
-            if(str == null){
-                //no private messages, so add
-                int chat_id = 0;
-                try {
-                    chat_id = esql.AddNewPrivateChat(s);
-                } catch (Exception e){
-                    JOptionPane.showMessageDialog(UI.this, e.getMessage());
-                    return;
-                }
+            if(!esql.isBlocked(s)) {
+                String str = esql.GetPrivateChat(s);
+                if (str == null) {
+                    //no private messages, so add
+                    int chat_id = 0;
+                    try {
+                        chat_id = esql.AddNewPrivateChat(s);
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                        JOptionPane.showMessageDialog(UI.this, s + " is already added to chat!");
+                        return;
+                    }
 //                CardLayoutPanel.setChatId(s);
-                CardLayoutPanel.setMessageList(Integer.toString(chat_id));
-                tabbedPane.reloadMessages();
-                tabbedPane.repaint();
-            }else {
-                CardLayoutPanel.setMessageList(str);
+                    CardLayoutPanel.setMessageList(Integer.toString(chat_id));
+                    tabbedPane.reloadMessages();
+                    tabbedPane.repaint();
+                } else {
+                    CardLayoutPanel.setMessageList(str);
+                }
+            } else {
+                JOptionPane.showMessageDialog(UI.this, s +
+                                " is blocked. Please remove the user from blocked list",
+                        "Blocked user", JOptionPane.WARNING_MESSAGE
+                );
             }
         }
 
         @Override
         public void addUserToChatEventOccurred(String s) {
-            if(esql.IsInitSender(s)) {
+            if (esql.IsInitSender(s)) {
                 String str = (String) JOptionPane.showInputDialog(
                         UI.this,
                         "Enter username to add to chat",
@@ -141,32 +153,38 @@ public class UI extends JPanel implements ActionListener
                         JOptionPane.PLAIN_MESSAGE
                 );
                 if ((str != null) && (str.length() > 0)) {
-                        if (!esql.GetUser(str).isEmpty()) {
+                    if (!esql.GetUser(str).isEmpty()) {
+                        if (!esql.isBlocked(str)) {
                             try {
                                 esql.AddUserToChat(s, str);
                                 tabbedPane.loadUser();
                                 tabbedPane.repaint();
-                            } catch(SQLException ex){
-                                JOptionPane.showMessageDialog(UI.this, "User is already added!");
-                            }
-                            catch (Exception ev) {
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(UI.this, str + " is already added!");
+                            } catch (Exception ev) {
                                 JOptionPane.showMessageDialog(UI.this, ev.getMessage());
                             }
                         } else {
-                            JOptionPane.showMessageDialog(UI.this, "No user with the name " + str);
+                            JOptionPane.showMessageDialog(UI.this, str +
+                                            " is blocked. Please remove the user from blocked list",
+                                    "Blocked user", JOptionPane.WARNING_MESSAGE
+                            );
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(UI.this, "No user with the name " + str);
+                    }
                 }
-            }else {
+            } else {
                 JOptionPane.showMessageDialog(UI.this, "You are not the initial user!");
             }
         }
 
         @Override
         public void removeUserFromChatEventOccurred(String s) {
-            if(esql.IsInitSender(s)) {
+            if (esql.IsInitSender(s)) {
                 List<List<String>> tmp = esql.AllUsersInChat(s);
                 String[] userNames = new String[tmp.size()];
-                for(int i = 0; i < tmp.size(); i++){
+                for (int i = 0; i < tmp.size(); i++) {
                     userNames[i] = tmp.get(i).get(0);
                 }
                 String str = (String) JOptionPane.showInputDialog(
@@ -191,7 +209,7 @@ public class UI extends JPanel implements ActionListener
                         JOptionPane.showMessageDialog(UI.this, "No user with the name " + str);
                     }
                 }
-            }else {
+            } else {
                 JOptionPane.showMessageDialog(UI.this, "You are not the initial user!");
             }
         }
@@ -203,60 +221,68 @@ public class UI extends JPanel implements ActionListener
         }
     };
 
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
-        if("logout".equals(cmd)){
+        if ("logout".equals(cmd)) {
             listener.logoutEventOccured();
             CardLayoutPanel.clearMessageList();
             loginName.setVisible(false);
-        }else if ("add".equals(cmd)){
-            String s = (String)JOptionPane.showInputDialog(
+        } else if ("add".equals(cmd)) {
+            String s = (String) JOptionPane.showInputDialog(
                     this,
                     "Enter username to add",
                     "Add user",
                     JOptionPane.PLAIN_MESSAGE
-                    );
-            if((s != null) && (s.length() > 0)){
-                if(!esql.GetUser(s).isEmpty()){
-                    try{
-                        esql.AddToContact(s);
-                        tabbedPane.reloadContacts();
-                        tabbedPane.repaint();
-                    }catch(Exception ev){
-                        System.err.println(ev.getMessage());
-                        JOptionPane.showMessageDialog(this, s + " is already a friend");
+            );
+            if ((s != null) && (s.length() > 0)) {
+                if (!esql.GetUser(s).isEmpty()) {
+                    if(!esql.isBlocked(s)) {
+                        try {
+                            esql.AddToContact(s);
+                            tabbedPane.reloadContacts();
+                            tabbedPane.repaint();
+                        } catch (Exception ev) {
+                            System.err.println(ev.getMessage());
+                            JOptionPane.showMessageDialog(this, s + " is already a friend");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(UI.this, s +
+                                        " is blocked. Please remove the user from blocked list",
+                                "Blocked user", JOptionPane.WARNING_MESSAGE
+                        );
                     }
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(this, "No user with the name " + s);
                 }
             }
-        }else if ("block".equals(cmd)){
-            String s = (String)JOptionPane.showInputDialog(
+        } else if ("block".equals(cmd)) {
+            String s = (String) JOptionPane.showInputDialog(
                     this,
                     "Enter username to block",
                     "Block user",
                     JOptionPane.PLAIN_MESSAGE
-                    );
-            if((s != null) && (s.length() > 0)){
-                if(!esql.GetUser(s).isEmpty()){
-                    if(!s.equals(esql.getUser())) {
+            );
+            if ((s != null) && (s.length() > 0)) {
+                if (!esql.GetUser(s).isEmpty()) {
+                    if (!s.equals(esql.getUser())) {
                         try {
                             esql.AddToBlock(s);
                             tabbedPane.reloadBlocked();
+                            tabbedPane.reloadMessages();
                             tabbedPane.repaint();
                         } catch (Exception ev) {
                             System.err.println(ev.getMessage());
                             JOptionPane.showMessageDialog(this, s + " is already blocked");
                         }
-                    }else{
+                    } else {
                         JOptionPane.showMessageDialog(this, "You cannot block yourself");
                     }
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(this, "No user with the name " + s);
                 }
             }
-        }else if ("removeChat".equals(cmd)){
-            try{
+        } else if ("removeChat".equals(cmd)) {
+            try {
                 MessengerGui.getInstance().DeleteChat(CardLayoutPanel.getChatId());
                 CardLayoutPanel.clearMessageList();
                 tabbedPane.reloadMessages();
@@ -265,41 +291,47 @@ public class UI extends JPanel implements ActionListener
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(this, e1.getMessage());
             }
-        }else if ("deleteAccount".equals(cmd)){
-            try{
+        } else if ("deleteAccount".equals(cmd)) {
+            try {
                 MessengerGui.getInstance().DeleteUser();
                 listener.deleteAccountEventOccurred();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(this, e1.getMessage());
             }
-        }else if ("addChat".equals(cmd)){
-            String s = (String)JOptionPane.showInputDialog(
+        } else if ("addChat".equals(cmd)) {
+            String s = (String) JOptionPane.showInputDialog(
                     this,
                     "Enter in username to start new chat",
                     "Start new chat",
                     JOptionPane.PLAIN_MESSAGE
             );
-            if((s != null) && (s.length() > 0)){
-                if(!esql.GetUser(s).isEmpty()){
-                    String str = esql.GetPrivateChat(s);
-                    if(str == null){
-                        //no private messages, so add
-                        int chat_id = 0;
-                        try {
-                            chat_id = esql.AddNewPrivateChat(s);
-                        } catch (Exception ex){
-                            JOptionPane.showMessageDialog(UI.this, ex.getMessage());
-                            return;
-                        }
+            if ((s != null) && (s.length() > 0)) {
+                if (!esql.GetUser(s).isEmpty()) {
+                    if (!esql.isBlocked(s)) {
+                        String str = esql.GetPrivateChat(s);
+                        if (str == null) {
+                            //no private messages, so add
+                            int chat_id = 0;
+                            try {
+                                chat_id = esql.AddNewPrivateChat(s);
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(UI.this, ex.getMessage());
+                                return;
+                            }
 //                CardLayoutPanel.setChatId(s);
-                        CardLayoutPanel.setMessageList(Integer.toString(chat_id));
-                        tabbedPane.reloadMessages();
-                        tabbedPane.repaint();
-                    }else {
-                        CardLayoutPanel.setMessageList(str);
+                            CardLayoutPanel.setMessageList(Integer.toString(chat_id));
+                            tabbedPane.reloadMessages();
+                            tabbedPane.repaint();
+                        } else {
+                            CardLayoutPanel.setMessageList(str);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(UI.this, s +
+                                        " is blocked. Please remove the user from blocked list",
+                                "Blocked user", JOptionPane.WARNING_MESSAGE
+                        );
                     }
-
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(this, "No user with the name " + s);
                 }
             }
@@ -309,5 +341,11 @@ public class UI extends JPanel implements ActionListener
 
     public void setUIListener(UIListener listener) {
         this.listener = listener;
+    }
+
+
+    @Override
+    public void paintComponent(Graphics g){
+        g.drawImage(Mainframe.img, 0, 0, getWidth(), getHeight(), this);
     }
 }

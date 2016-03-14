@@ -60,13 +60,20 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         return v;
     }
 
-    protected void setTextAndImage(List<List<String>> l, JButton button){
+    protected boolean setTextAndImage(List<List<String>> l, JButton button){
         String html = "<html>";
         int size = l.size();
 
         if(size <= 1){
             html += "<em>Private</em><br>";
             button.setIcon(userIcon);
+            List<List<String>> tmp = esql.ListBlocked();
+            for(List<String> tmpL : tmp){
+                if(tmpL.get(0).equals(l.get(0).get(0).trim())){
+                    System.out.println("Blocked: " + tmpL.get(0));
+                    return false;
+                }
+            }
         } else {
             html += "<em>Group</em><br>";
             button.setIcon(groupIcon);
@@ -78,6 +85,7 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         }
         html += "</html>";
         button.setText(html);
+        return true;
     }
 
     @Override
@@ -100,12 +108,15 @@ public class UIMessageList extends UIAbstractList implements ActionListener
         c.weightx = 1.0;
         c.weighty = 1.0;
 
+        int gridy = 0;
         for(int i = 0; i < list.size(); i++){
             users[i] = makeUser(i);
-            setTextAndImage(esql.AllUsersInChat(list.get(i).get(0)), users[i]);
-            c.gridy = i;
+            if(setTextAndImage(esql.AllUsersInChat(list.get(i).get(0)), users[i])){
+                c.gridy = gridy;
+                ++gridy;
+                add(users[i], c);
+            }
 //            gbl.setConstraints(users[i], c);
-            add(users[i], c);
         }
 
 //        for(int i = 0; i < list.size(); i++){

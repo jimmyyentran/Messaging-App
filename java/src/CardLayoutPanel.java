@@ -21,10 +21,11 @@ public class CardLayoutPanel implements ActionListener{
     private JTextField textField;
     private static JScrollBar scrollBar;
     private JPanel topStatus;
-    private static JLabel topLabel;
+    private static JButton picLabel;
     private static JTable table;
     private static JButton addToChat;
     private static JButton removeFromChat, refreshAll;
+    private static Random rand;
     private Action action = new AbstractAction() {
         public void actionPerformed(ActionEvent e){
             String text = textField.getText();
@@ -45,6 +46,12 @@ public class CardLayoutPanel implements ActionListener{
         }
     };
 
+    public static int randInt(int min, int max){
+        rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
+    }
+
     public CardLayoutPanel() {
         removeC = new JButton("Remove From Contacts");
         removeB = new JButton("Remove From Blocked");
@@ -53,6 +60,8 @@ public class CardLayoutPanel implements ActionListener{
         removeC.addActionListener(this);
         removeB.addActionListener(this);
         newMessage.addActionListener(this);
+
+        picLabel = new JButton(Mainframe.userImages[randInt(0, 6)]);
 
         cards = new JPanel(cardLayout);
         messagePanel = makeMessagePanel();
@@ -77,22 +86,38 @@ public class CardLayoutPanel implements ActionListener{
     }
 
     private JPanel makeContactPanel(){
-        JPanel panel = new JPanel(new GridLayout(0,1));
-        panel.add(contactLabel);
-        panel.add(removeC);
-        panel.add(newMessage);
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(contactLabel, c);
+        c.gridy++;
+//        panel.add(new JButton("TEST"), c);
+        panel.add(picLabel, c);
+        c.gridy++;
+        panel.add(removeC, c);
+        c.gridy++;
+        panel.add(newMessage, c);
         return panel;
     }
 
     private JPanel makeBlockPanel(){
-        JPanel panel = new JPanel(new GridLayout(0,1));
-        panel.add(blockLabel);
-        panel.add(removeB);
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = c.gridy = 0;
+        panel.add(blockLabel, c);
+        c.gridy++;
+        panel.add(picLabel, c);
+        c.gridy++;
+        panel.add(removeB, c);
         return panel;
     }
 
     private JPanel makeMessagePanel(){
         JPanel panel = new JPanel();
+        panel.setOpaque(false);
         panel.setLayout(new BorderLayout(0,0));
 
         //messageList
@@ -107,14 +132,17 @@ public class CardLayoutPanel implements ActionListener{
 
         //splitPane
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, makeTextInputPanel());
+        splitPane.setOpaque(false);
         splitPane.setDividerLocation(200);
 
         //Message and status
         FlowLayout fl = new FlowLayout();
         topStatus = new JPanel(fl);
+        topStatus.setOpaque(false);
         fl.setAlignment(FlowLayout.TRAILING);
         topStatus.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         ImageIcon add = new ImageIcon("images/add_16.gif");
+//        ImageIcon add = new ImageIcon("images/user1.png");
         ImageIcon remove = new ImageIcon("images/block_16.gif");
         ImageIcon refresh = new ImageIcon("images/refresh_16.png");
 
@@ -152,6 +180,7 @@ public class CardLayoutPanel implements ActionListener{
 
     private JPanel makeTextInputPanel(){
         JPanel panel = new JPanel();
+        panel.setOpaque(false);
 
         JButton button = new JButton(new ImageIcon("images/mail_48.png"));
         button.addActionListener(action);
@@ -168,6 +197,8 @@ public class CardLayoutPanel implements ActionListener{
 
     public static void setContactUsername(String name){
         contactUsername = name;
+        picLabel.setIcon(Mainframe.userImages[randInt(0, 6)]);
+        picLabel.repaint();
         contactLabel.setText(name);
         contactLabel.repaint();
         cardLayout.show(cards, "contactPanel");
@@ -175,6 +206,8 @@ public class CardLayoutPanel implements ActionListener{
 
     public static void setBlockUsername(String name){
         blockUsername = name;
+        picLabel.setIcon(Mainframe.userImages[randInt(0, 6)]);
+        picLabel.repaint();
         blockLabel.setText(name);
         blockPanel.repaint();
         cardLayout.show(cards, "blockPanel");
@@ -218,6 +251,8 @@ public class CardLayoutPanel implements ActionListener{
 
     public static void clearMessageList(){
         messageList.setListData(new Object[0]);
+        setChatId(null);
+        cardLayout.show(cards, "messagePanel");
     }
 
     public JPanel getPanel() {

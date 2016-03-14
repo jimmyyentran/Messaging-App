@@ -1,13 +1,19 @@
-import javax.swing.JFrame;
-import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class Mainframe extends JFrame {
     private Login login;
     private CardLayoutView view;
     private MessengerGui model;
+    public static final Image img = Toolkit.getDefaultToolkit().createImage("images/background.jpg");
+    public static ImageIcon[] userImages = new ImageIcon[8];
 
     public Mainframe() {
+        for(int i = 0; i < 8; i++){
+            String imgUrl = String.format("images/user%d.png", i);
+            userImages[i] = new ImageIcon(imgUrl);
+        }
         login = new Login();
         view = new CardLayoutView();
         initUI();
@@ -35,6 +41,7 @@ public class Mainframe extends JFrame {
         // setSize(300, 150);
         setSize(650, 350);
         setLocationRelativeTo(null);
+        setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
